@@ -1,32 +1,43 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include "kernelHandler.h"
 
 using namespace cv;
 using namespace std;
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
- // Read the image file
- cv::Mat image = imread("res\\images\\Lenna.png");
- cv::Mat result;
- const int ratio = 3;
- const int lowThreshold = 20;
- const int kernel_size = 3;
+    // Read the image file
+    cv::Mat image = imread("\\res\\images\\Lenna.png");
+    cv::Mat result;
+    const int ratio = 3;
+    const int lowThreshold = 20;
+    const int kernel_size = 3;
 
- // Check for failure
- if (image.empty()) 
- {
-  cout << "Could not open or find the image" << endl;
-  cin.get(); //wait for any key press
-  return -1;
- }
- 
- cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
- cv::blur(result, result, cv::Size(3, 3));
- cv::Canny(result, result, lowThreshold, lowThreshold*ratio, kernel_size);
-//  image.copyTo(result);
- cout << "image = " << endl << " "  << image << endl << endl;
- cout << "result = " << endl << " "  << result << endl << endl;
+    kernelHandler kh = kernelHandler("kernels.txt");
 
- return 0;
+    // Check for failure
+    if (image.empty())
+    {
+        cout << "Could not open or find the image" << endl;
+        cin.get(); //wait for any key press
+        return -1;
+    }
+
+    cout << "image = " << endl
+         << " " << image << endl
+         << endl;
+
+    cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
+    for (kernel k : kh.getKernels())
+    {
+        cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_16F, &k.matrix);
+        cv::filter2D(result, result, -1, ker, Point(-1, -1), 5.0, BORDER_REPLICATE);
+        cout << "result = " << endl
+             << " " << result << endl
+             << endl;
+    }
+    //  image.copyTo(result);
+
+    return 0;
 }

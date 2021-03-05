@@ -84,3 +84,8 @@ kernel kernelHandler::getKernel(int index)
 {
     return kernels[index];
 }
+
+std::vector<kernel> kernelHandler::getKernels()
+{
+    return kernels;
+}

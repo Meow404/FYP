@@ -23,4 +23,5 @@ public:
     void printKernel(); 
     int getNumOfKernels();
     kernel getKernel(int index);
+    std::vector<kernel> getKernels();
 };
