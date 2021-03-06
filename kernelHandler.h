@@ -24,5 +24,5 @@ public:
     int getNumOfKernels();
     kernel getKernel(int index);
     std::vector<kernel> getKernels();
-    cv::Mat kernelHandler::returnMatrix(int index);
+    cv::Mat returnMatrix(int index);
 };
