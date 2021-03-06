@@ -1,4 +1,5 @@
 #include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
 #include <iostream>
 #include "kernelHandler.h"
 
@@ -32,6 +33,8 @@ int main(int argc, char **argv)
     for (kernel k : kh.getKernels())
     {
         cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_16F, &k.matrix);
+        
+        cv::normalize(ker, ker);	
         cv::filter2D(result, result, -1, ker, Point(-1, -1), 5.0, BORDER_REPLICATE);
         cout << "result = " << endl
              << " " << result << endl
