@@ -92,7 +92,7 @@ std::vector<kernel> kernelHandler::getKernels()
     return kernels;
 }
 
-Mat kernelHandler::returnMatrix(int index)
+cv::Mat kernelHandler::returnMatrix(int index)
 {
     Mat mat = Mat::ones(kernels[index].dimension, kernels[index].dimension, CV_32F);
 
