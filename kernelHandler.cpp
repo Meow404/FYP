@@ -1,4 +1,5 @@
 #include "kernelHandler.h"
+#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -6,6 +7,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace cv;
 
 kernelHandler::kernelHandler(const char *kernelFilename)
 {
@@ -61,10 +63,10 @@ void kernelHandler::printKernel()
 {
     printf("\nNum of kernels : %d", numOfKernels);
     for (int k = 0; k < numOfKernels; k++)
-    {   
+    {
         printf("\n%dx%d", kernels[k].dimension, kernels[k].dimension);
         for (int i = 0; i < kernels[k].dimension; i++)
-        {   
+        {
             printf("\n");
             for (int j = 0; j < kernels[k].dimension; j++)
             {
@@ -73,7 +75,7 @@ void kernelHandler::printKernel()
         }
         std::cout << "\n====================================";
     }
-}  
+}
 
 int kernelHandler::getNumOfKernels()
 {
@@ -88,4 +90,18 @@ kernel kernelHandler::getKernel(int index)
 std::vector<kernel> kernelHandler::getKernels()
 {
     return kernels;
+}
+
+Mat kernelHandler::returnMatrix(int index)
+{
+    Mat mat = Mat::ones(kernels[index].dimension, kernels[index].dimension, CV_32F);
+
+    for (int i = 0; i < kernels[index].dimension; i++)
+    {
+        for (int j = 0; j <kernels[index].dimension; j++)
+        {
+            mat.at<float>(i,j) = kernels[index].matrix[i][j];
+        }
+    }
+    return mat;
 }

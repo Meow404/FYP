@@ -31,14 +31,13 @@ int main(int argc, char **argv)
 
     cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
     kh.printKernel();
-    for (kernel k : kh.getKernels())
+    for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
-        cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_32FC1, k.matrix);
-        cout << "kernel = " << ker << endl;
+        cout << "kernel = " << kh.returnMatrix(i) << endl;
         // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);	
         // cout << "kernel = " << ker;
 
-        cv::filter2D(result, result, -1, ker, Point(-1, -1), 5.0, BORDER_REPLICATE);
+        cv::filter2D(result, result, -1, kh.returnMatrix(i), Point(-1, -1), 5.0, BORDER_REPLICATE);
         cout << "result = " << endl
              << " " << result << endl
              << endl;
