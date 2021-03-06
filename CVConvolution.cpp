@@ -34,8 +34,8 @@ int main(int argc, char **argv)
     {
         cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_16F, &k.matrix);
         cout << "kernel = " << ker;
-        cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);	
-        cout << "kernel = " << ker;
+        // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);	
+        // cout << "kernel = " << ker;
 
         cv::filter2D(result, result, -1, ker, Point(-1, -1), 5.0, BORDER_REPLICATE);
         cout << "result = " << endl
