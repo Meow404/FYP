@@ -30,10 +30,11 @@ int main(int argc, char **argv)
          << endl;
 
     cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
+    kh.printKernel();
     for (kernel k : kh.getKernels())
     {
         cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_16F, &k.matrix);
-        cout << "kernel = " << ker;
+        cout << "kernel = " << ker << endl;
         // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);	
         // cout << "kernel = " << ker;
 
