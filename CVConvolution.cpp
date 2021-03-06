@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
     // Read the image file
-    cv::Mat image = imread("\\res\\images\\Lenna.png");
+    cv::Mat image = imread("res/images/lena_bw.pgm", IMREAD_UNCHANGED);
     cv::Mat result;
     const int ratio = 3;
     const int lowThreshold = 20;
