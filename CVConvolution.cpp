@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     kh.printKernel();
     for (kernel k : kh.getKernels())
     {
-        cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_16F, &k.matrix);
+        cv::Mat ker = cv::Mat(k.dimension, k.dimension, CV_32FC1, &k.matrix);
         cout << "kernel = " << ker << endl;
         // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);	
         // cout << "kernel = " << ker;
