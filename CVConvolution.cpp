@@ -1,13 +1,14 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudaimgproc.hpp>
 #include <iostream>
 #include "kernelHandler.h"
 
 using namespace cv;
 using namespace std;
 
-void opencvConvolve()
+int opencvConvolve()
 {
     // Read the image file
     cv::Mat image = imread("res/images/lena_bw.pgm");
@@ -50,7 +51,7 @@ void opencvConvolve()
     //  image.copyTo(result);
 }
 
-void opencvCUDAConvolve()
+int opencvCUDAConvolve()
 {
     // Read the image file
     cv::Mat image = imread("res/images/lena_bw.pgm");
@@ -87,7 +88,7 @@ void opencvCUDAConvolve()
         // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);
         // cout << "kernel = " << ker;
 
-        Ptr<cuda::Convolution> convolver = cuda::createConvolution(k.size);
+        Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(3, 3));
         convolver->convolve(gpu_result, gpu_kernel, gpu_result);
         // cv::filter2D(result, result, -1, kernel, Point(-1, -1), 5.0, BORDER_REPLICATE);
         gpu_result.download(result);
