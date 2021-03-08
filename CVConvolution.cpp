@@ -1,7 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
-#include <opencv2/cudaarithm.hpp>
-#include <opencv2/cudaimgproc.hpp>
+#include "opencv2/cudaarithm.hpp"
+#include "opencv2/core/cuda.hpp"
 #include <iostream>
 #include "kernelHandler.h"
 
