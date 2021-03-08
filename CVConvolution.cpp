@@ -37,8 +37,8 @@ void opencvConvolve()
         int dim = kh.getKernel(i).dimension;
         cv::Mat k = kh.returnMatrix(i);
         cout << "kernel = " << k << endl;
-        // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);
-        // cout << "kernel = " << ker;
+        cv::normalize(k, k, 1.0, 0.0, NORM_L1);
+        cout << "kernel = " << k << endl;
 
         // Ptr<cuda::Convolution> convolver = cuda::createConvolution(k.size);
         // convolver->convolve(result, k, result);
