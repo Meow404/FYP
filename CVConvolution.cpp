@@ -89,7 +89,7 @@ int opencvCUDAConvolve()
         // cout << "kernel = " << ker;
 
         Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(dim, dim));
-        convolver->convolve(gpu_result, gpu_kernel, gpu_result);
+        convolver->convolve(gpu_image, gpu_kernel, gpu_result);
         // cv::filter2D(result, result, -1, kernel, Point(-1, -1), 5.0, BORDER_REPLICATE);
         gpu_result.download(result);
         cout << "result = " << endl
