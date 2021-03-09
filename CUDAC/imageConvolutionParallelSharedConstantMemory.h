@@ -168,7 +168,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
           else
           {
 
-            float k = kernel[i + j * (*kernelDimensionYConstant)];
+            float k = kernelConstant[i + j * (kernelDimensionYConstant)];
             float imageElement = local_imageSection[row + j - offsetY][col + i - offsetX];
 
             value = k * imageElement;
