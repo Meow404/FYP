@@ -126,16 +126,16 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
   strcpy(outputFilename + strlen(imagePath) - 4, "_sharedMemory_parallel_out.pgm");
   sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
 
-     for (int i = 0; i < 15; i++) {
-       printf("Line %d : ", i);
-        for (int j = 0; j < 15; j++) {
-            printf("%.2f ", sumArray[i*imageWidth+j]);
-          //   if((i*width+j) % 15 == 0){
-          //      printf("\n");
-          //  }
-        }
-        printf("\n");
-    }
+    //  for (int i = 0; i < 15; i++) {
+    //    printf("Line %d : ", i);
+    //     for (int j = 0; j < 15; j++) {
+    //         printf("%.2f ", sumArray[i*imageWidth+j]);
+    //       //   if((i*width+j) % 15 == 0){
+    //       //      printf("\n");
+    //       //  }
+    //     }
+    //     printf("\n");
+    // }
 }
 
 __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
