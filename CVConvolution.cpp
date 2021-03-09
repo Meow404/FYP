@@ -77,7 +77,7 @@ int opencvCUDAConvolve()
     
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
     gpu_image.upload(image);
-    gpu_image.convertTo(gpu_image, CV_32FC1)
+    gpu_image.convertTo(gpu_image, CV_32FC1);
 
     kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
