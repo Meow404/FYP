@@ -3,6 +3,7 @@
 #include <opencv2/cudaarithm.hpp>
 #include "opencv2/core/cuda.hpp"
 #include <iostream>
+#include <stdio.h>
 #include "kernelHandler.h"
 
 using namespace cv;
@@ -47,6 +48,11 @@ int opencvConvolve()
         cout << "result = " << endl
              << " " << result << endl
              << endl;
+        
+        char filename[50];
+        sprintf(filename,"res/images/result_convolve_%d_kernel.jpg", dim);
+        cout << "Writing to : " << filename;
+        imwrite(filename, result); 
     }
     //  image.copyTo(result);
 }
@@ -89,8 +95,8 @@ int opencvCUDAConvolve()
         cout << "kernel = " << k << endl;
         gpu_kernel.upload(k);
         gpu_kernel.convertTo(gpu_kernel, CV_32FC1);
-        // cv::normalize(ker, ker, 1.0, 0.0, NORM_L1);
-        // cout << "kernel = " << ker;
+        cv::normalize(k, k, 1.0, 0.0, NORM_L1);
+        cout << "kernel = " << k;
 
         Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(dim, dim));
         convolver->convolve(gpu_image, gpu_kernel, gpu_result);
@@ -99,6 +105,11 @@ int opencvCUDAConvolve()
         cout << "result = " << endl
              << " " << result << endl
              << endl;
+        
+        char filename[50];
+        sprintf(filename,"res/images/result_CUDA_convolve_%d_kernel.jpg", dim);
+        cout << "Writing to : " << filename;
+        imwrite(filename, result); 
     }
     //  image.copyTo(result);
 }
