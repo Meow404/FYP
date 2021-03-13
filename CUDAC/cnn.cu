@@ -82,37 +82,37 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
       {
       case 1:
         result = applyKernelToImageSerial(hData, width, height, *kernels[i], imagePath);
-        if (j == 0):sprintf(file_name, "_%dx%d_serial_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_serial_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       case 2:
         result = applyKernelToImageParallelNaive(hData, width, height, kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0):sprintf(file_name, "_%dx%d_parallel_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_parallel_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       case 3:
         result = applyKernelToImageParallelSharedMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0):sprintf(file_name, "_%dx%d_parallel_shared_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_parallel_shared_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       case 4:
         result = applyKernelToImageParallelConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0):sprintf(file_name, "_%dx%d_parallel_constant_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_parallel_constant_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       case 5:
         result = applyKernelToImageParallelSharedConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0):sprintf(file_name, "_%dx%d_parallel_shared_constant_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_parallel_shared_constant_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       case 6:
         result = applyKernelToImageParallelTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0):sprintf(file_name, "_%dx%d_parallel_texture_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_parallel_texture_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       case 7:
         result = applyKernelToImageParallel2DTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0):sprintf(file_name, "_%dx%d_paralled_2D_texture_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        if (j == 0) sprintf(file_name, "_%dx%d_paralled_2D_texture_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       default:
