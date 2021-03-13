@@ -9,11 +9,11 @@ float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWid
 // float applyKernelPerPixelSharedConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, float *d_sumArray);
 
-// __constant__ float kernelConstant[KERNEL_DIMENSION * KERNEL_DIMENSION];
-// __constant__ int imageWidthConstant;
-// __constant__ int imageHeightConstant;
-// __constant__ int kernelDimensionXConstant;
-// __constant__ int kernelDimensionYConstant;
+__constant__ float kernelConstant[KERNEL_DIMENSION * KERNEL_DIMENSION];
+__constant__ int imageWidthConstant;
+__constant__ int imageHeightConstant;
+__constant__ int kernelDimensionXConstant;
+__constant__ int kernelDimensionYConstant;
 
 // void imageConvolutionParallelSharedConstantMemory(const char *imageFilename, char **argv)
 // {

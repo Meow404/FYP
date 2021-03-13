@@ -1,30 +1,62 @@
 #ifndef _helper_h   
 #define _helper_h
+
+#include <iostream>
+#include <stdio.h>
+
 void flipKernel(float* kernel, int kernelDimension);
 void loadKernels(float * kernel, char buf[512]);
 void loadAllKernels(float ** kernels,  FILE* fp);
 int getNumKernels(FILE* fp);
 
-void loadAllKernels(float ** kernels, FILE* fp){   
+struct kernel
+{
+    int dimension;
+    float *matrix;
+};
+
+kernel** loadAllKernels(FILE* fp, int numOfKernels){   
     char buf[512];
     int index = 0;
-    
-   
-    while (fgets(buf, sizeof(buf), fp) != NULL)
+    int numOfKernels;
+
+    kernel **kernels = (kernel **)malloc(sizeof(kernel *) * numOfKernels);
+
+    for (int i = 0; i < numOfKernels; i++)
     {
-      loadKernels(kernels[index],buf);
-      index++;
+        int kernel_dim;
+        fgets(buf, sizeof(buf), fp);
+        sscanf(buf, "%d", &kernel_dim);
+
+        kernel kl;
+        kl.dimension = kernel_dim;
+        kl.matrix = (float *)malloc(sizeof(float) * kernel_dim * kernel_dim);
+
+        for (int j = 0; j < kernel_dim; j++)
+        {
+            // kl.matrix[j] = new float[kernel_dim];
+            fgets(buf, sizeof(buf), fp);
+            loadRow(kl.matrix, j, kernel_dim, buf);
+        }
+        kernels[i] = &kl;
     }
+    return kernels;
+   
+    // while (fgets(buf, sizeof(buf), fp) != NULL)
+    // {
+    //   loadKernels(kernels[index],buf);
+    //   index++;
+    // }
       
 }
 
-void loadKernels(float * kernel, char buf[512]){ 
+void loadRow(float * matrix, int row, int kernel_dim, char buf[512]){ 
     int count = 0;
     buf[strlen(buf) - 1] = '\0';
     const char delimeter[2] = ",";
     char* token = strtok(buf, delimeter);
     while( token != NULL){
-      sscanf(token, "%f,", &kernel[count] );
+      sscanf(token, "%f,", &matrix[row*kernel_dim + count] );
       token = strtok(NULL,delimeter);
       count = count + 1;
         

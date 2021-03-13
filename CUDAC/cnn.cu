@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
-#include "../kernelHandler.h"
+// #include "../kernelHandler.h"
 #include "helpers.h"
 #include "imageConvolutionSerial.h"
 #include "imageConvolutionParallel.h"
@@ -40,12 +40,25 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
   //   exit(EXIT_FAILURE);
   // }
 
-  kernelHandler kh = kernelHandler("../kernels.txt");
+  FILE *fp = fopen("kernels.txt", "r");
+  if (fp == NULL)
+  {
+    perror("Error in opening file");
+    exit(EXIT_FAILURE);
+  }
 
-  for (int i = 0; i < kh.getNumOfKernels(); i++)
+  int numOfKernels;
+  fgets(buf, sizeof(buf), fp);
+  sscanf(buf, "%d", &numOfKernels);
+
+  kernel** kernels = loadAllKernels(fp, numOfKernels);
+
+  // kernelHandler kh = kernelHandler("../kernels.txt");
+
+  for (int i = 0; i < numOfKernels; i++)
   {
     float totalTime = 0.0;
-    printf("Kernel Dimension : %dx%d", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
+    printf("Kernel Dimension : %dx%d", kernels[i]->dimension, kernels[i]->dimension);
 
     for (int i = 0; i < ITERATIONS; i++)
     {
@@ -57,27 +70,27 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
       switch (option)
       {
       case 1:
-        applyKernelToImageSerial(hData, width, height, kh.getKernel(i), imagePath);
+        applyKernelToImageSerial(hData, width, height, *kernels[i], imagePath);
         break;
 
       case 2:
-        applyKernelToImageParallelNaive(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelNaive(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 3:
-        applyKernelToImageParallelSharedMemory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelSharedMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 4:
-        applyKernelToImageParallelConstantMemory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 5:
-        applyKernelToImageParallelSharedConstantMemory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelSharedConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 6:
-        applyKernelToImageParallelTextureMomory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       default:
