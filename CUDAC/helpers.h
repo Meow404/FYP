@@ -27,7 +27,7 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
         int kernel_dim;
         fgets(buf, sizeof(buf), fp);
         sscanf(buf, "%d", &kernel_dim);
-        printf("Loading kernel with kernel dimesnion %dx%d", kernel_dim, kernel_dim);
+        printf("Loading kernel with kernel dimesnion %dx%d\n", kernel_dim, kernel_dim);
 
         kernel kl;
         kl.dimension = kernel_dim;
@@ -41,6 +41,21 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
             loadRow(kl.matrix, j, kernel_dim, buf);
         }
         kernels[i] = &kl;
+    }
+
+    printf("\nNum of kernels : %d", numOfKernels);
+    for (int k = 0; k < numOfKernels; k++)
+    {
+        printf("\n%dx%d", kernels[k]->dimension, kernels[k]->dimension);
+        for (int i = 0; i < kernels[k]->dimension; i++)
+        {
+            printf("\n");
+            for (int j = 0; j < kernels[k]->dimension; j++)
+            {
+                printf("%f ", kernels[k]->matrix[i*kernels[k]->dimension + j]);
+            }
+        }
+        std::cout << "\n====================================";
     }
     return kernels;
    
