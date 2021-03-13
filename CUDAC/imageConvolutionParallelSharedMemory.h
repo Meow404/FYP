@@ -163,9 +163,9 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int col = threadIdx.x;
 
   const int blockWidthX = blockDim.x;
-  const int blockWidthY = blockDim.Y;
+  const int blockWidthY = blockDim.y;
 
-  __shared__ float local_imageSection[blockWidthY][blockWidthX];
+  __shared__ float local_imageSection[128][128];
   int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x];
