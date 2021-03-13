@@ -134,7 +134,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  __shared__ float local_imageSection[128][128];
+  __shared__ float local_imageSection[28][28];
   int imageIndex = y * (imageWidthConstant) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (imageWidthConstant) + x];
