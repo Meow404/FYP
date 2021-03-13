@@ -27,6 +27,7 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
         int kernel_dim;
         fgets(buf, sizeof(buf), fp);
         sscanf(buf, "%d", &kernel_dim);
+        printf("Loading kernel with kernel dimesnion %dx%d", kernel_dim, kernel_dim);
 
         kernel kl;
         kl.dimension = kernel_dim;
@@ -36,6 +37,7 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
         {
             // kl.matrix[j] = new float[kernel_dim];
             fgets(buf, sizeof(buf), fp);
+
             loadRow(kl.matrix, j, kernel_dim, buf);
         }
         kernels[i] = &kl;

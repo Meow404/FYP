@@ -52,6 +52,8 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
   fgets(buf, sizeof(buf), fp);
   sscanf(buf, "%d", &numOfKernels);
 
+  printf("%d kernel to be loaded\n", numOfKernels);
+
   kernel** kernels = loadAllKernels(fp, numOfKernels);
 
   // kernelHandler kh = kernelHandler("../kernels.txt");
