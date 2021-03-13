@@ -138,6 +138,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
     }
     strcpy(outputFilename, imagePath);
     strcpy(outputFilename + strlen(imagePath) - 4, file_name);
+    printf("Saving to %s", outputFilename);
     sdkSavePGM(outputFilename, result, width, height);
   }
 }
