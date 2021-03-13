@@ -56,6 +56,8 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
+  printf("Kernels loaded\n");
+
   for (int i = 0; i < numOfKernels; i++)
   {
     float totalTime = 0.0;
