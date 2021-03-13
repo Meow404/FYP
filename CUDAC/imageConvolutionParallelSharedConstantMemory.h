@@ -8,11 +8,11 @@ float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWid
 // float applyKernelPerPixelSharedConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, float *d_sumArray);
 
-__constant__ float kernelConstant[KERNEL_DIMENSION * KERNEL_DIMENSION];
-__constant__ int imageWidthConstant;
-__constant__ int imageHeightConstant;
-__constant__ int kernelDimensionXConstant;
-__constant__ int kernelDimensionYConstant;
+// __constant__ float kernelConstant[128 * 129];
+// __constant__ int imageWidthConstant;
+// __constant__ int imageHeightConstant;
+// __constant__ int kernelDimensionXConstant;
+// __constant__ int kernelDimensionYConstant;
 
 // void imageConvolutionParallelSharedConstantMemory(const char *imageFilename, char **argv)
 // {
@@ -95,8 +95,8 @@ float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWid
   cudaMemcpyToSymbol(kernelDimensionXConstant, &kernel.dimension, sizeInt);
   cudaMemcpyToSymbol(kernelDimensionYConstant, &kernel.dimension, sizeInt);
 
-  int overlapX = (kernelDimension + 1) / 2;
-  int overlapY = (kernelDimension + 1) / 2;
+  int overlapX = (kernel.dimension + 1) / 2;
+  int overlapY = (kernel.dimension + 1) / 2;
 
   int numHorBlocks = (imageWidth) / (blockWidth - overlapX);
   int numVerBlocks = (imageHeight) / (blockWidth - overlapY);
@@ -134,7 +134,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  __shared__ float local_imageSection[blockDim.x][blockDim.y];
+  __shared__ float local_imageSection[128][128];
   int imageIndex = y * (imageWidthConstant) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (imageWidthConstant) + x];

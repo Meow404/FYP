@@ -2,11 +2,11 @@
 #define IMAGECONVOLUTIONPARALLELCONSTANTMEMORY
 
 
-float *applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
+float* applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 // float applyKernelPerPixelConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelConstantMemory(float *d_image, float *d_sumArray);
 
-__constant__ float kernelConstant[KERNEL_DIMENSION * KERNEL_DIMENSION];
+__constant__ float kernelConstant[128 * 128];
 __constant__ int imageWidthConstant;
 __constant__ int imageHeightConstant;
 __constant__ int kernelDimensionXConstant;
@@ -66,7 +66,7 @@ __constant__ int kernelDimensionYConstant;
 //   printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
 // }
 
-void applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
+float* applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
     int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
     float *d_kernel, *d_image, *d_sumArray;
