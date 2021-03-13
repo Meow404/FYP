@@ -5,61 +5,6 @@
 float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth);
 __global__ void applyKernelPerPixelParallel(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
 
-// void imageConvolutionParallel(const char *imageFilename, char **argv)
-// {
-//   // load image from disk
-//   float *hData = NULL;
-//   unsigned int width, height;
-//   char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
-
-//   if (imagePath == NULL)
-//   {
-//     printf("Unable to source image file: %s\n", imageFilename);
-//     exit(EXIT_FAILURE);
-//   }
-
-//   sdkLoadPGM(imagePath, &hData, &width, &height);
-//   printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
-
-//   //Get Kernels
-//   FILE *fp = fopen("kernels.txt", "r");
-//   if (fp == NULL)
-//   {
-//     perror("Error in opening file");
-//     exit(EXIT_FAILURE);
-//   }
-//   int numKernels = getNumKernels(fp);
-//   // int kernelDimension = 3;
-
-//   float **kernels = (float **)malloc(sizeof(float *) * numKernels);
-//   for (int i = 0; i < numKernels; i++)
-//   {
-//     kernels[i] = (float *)malloc(sizeof(float) * 100);
-//   }
-//   loadAllKernels(kernels, fp);
-//   fclose(fp);
-//   float totalTime = 0.0;
-//   for (int i = 0; i < 10; i++)
-//   {
-//     cudaEvent_t start, stop;
-//     cudaEventCreate(&start);
-//     cudaEventCreate(&stop);
-//     cudaEventRecord(start);
-
-//     for (int i = 0; i < numKernels; i++)
-//     {
-//       applyKernelToImageParallelNaive(hData, width, height, kernels[i], KERNELDIMENSION, imagePath);
-//     }
-//     cudaEventRecord(stop);
-//     cudaEventSynchronize(stop);
-//     float milliseconds = 0;
-//     cudaEventElapsedTime(&milliseconds, start, stop);
-//     printf("Time Naive Parallel Implementation: %f \n", milliseconds);
-//     totalTime += milliseconds;
-//   }
-//   printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
-// }
-
 float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth)
 {     
   
@@ -71,6 +16,7 @@ float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
   int sizeImageArray = imageWidth * imageHeight * sizeFloat;
   float *sumArray = (float *)malloc(sizeImageArray);
 
+  // CUDA create varibles
   cudaMalloc((void **)&d_kernelDimensionX, sizeInt);
   cudaMalloc((void **)&d_kernelDimensionY, sizeInt);
   cudaMalloc((void **)&d_imageWidth, sizeInt);
@@ -79,6 +25,7 @@ float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
   cudaMalloc((void **)&d_image, sizeImageArray);
   cudaMalloc((void **)&d_sumArray, sizeImageArray);
 
+  // CUDA copy from host to device
   cudaMemcpy(d_kernelDimensionX, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_kernelDimensionY, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageWidth, &imageWidth, sizeInt, cudaMemcpyHostToDevice);
@@ -102,11 +49,16 @@ float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
 
   //printImage(sumArray,imageWidth,imageHeight,"newImageP.txt");
 
+  // CUDA free varibles
+  cudaFree(d_kernelDimensionX);
+  cudaFree(d_kernelDimensionY);
+  cudaFree(d_imageWidth);
+  cudaFree(d_imageHeight);
+  cudaFree(d_kernel);
+  cudaFree(d_image);
+  cudaFree(d_sumArray);
+
   return sumArray;
-  // char outputFilename[1024];
-  // strcpy(outputFilename, imagePath);
-  // strcpy(outputFilename + strlen(imagePath) - 4, "_parallel_out.pgm");
-  // sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
 }
 __global__ void applyKernelPerPixelParallel(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
 {
