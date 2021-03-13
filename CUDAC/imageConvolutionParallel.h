@@ -61,7 +61,8 @@ __global__ void applyKernelPerPixelParallel(int *kernelX, int *kernelY, int *ima
 // }
 
 float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth)
-{
+{     
+        printf("Hi");
         for (int i = 0; i < kernel->dimension; i++)
         {
             printf("\n");
