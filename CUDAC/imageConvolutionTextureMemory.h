@@ -89,7 +89,7 @@ float* applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int
     cudaMemcpy(d_kernelDimensionY, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
     cudaMemcpy(d_imageWidth, &imageWidth, sizeInt, cudaMemcpyHostToDevice);
     cudaMemcpy(d_imageHeight, &imageHeight, sizeInt, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_kernel, kernel, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
     cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
     //Texture memory - 2d attempt
@@ -118,7 +118,7 @@ float* applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int
     applyKernelPerPixelParallelTextureMomory<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
     cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
-    return sumArray
+    return sumArray;
     //printImage(sumArray,imageWidth,imageHeight,"newImageP.txt");
     // char outputFilename[1024];
     // strcpy(outputFilename, imagePath);

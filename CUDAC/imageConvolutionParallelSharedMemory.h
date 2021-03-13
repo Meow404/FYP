@@ -63,7 +63,7 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *kernelX, int *kerne
 //   printf("Time Serial Average Implementation: %f ms\n", totalTime / 10);
 // }
 
-void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
+float* applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
   //printImage(image, imageWidth, imageHeight, "orginalImagePartition.txt");
   int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
@@ -163,7 +163,7 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  __shared__ float local_imageSection[blockDim.y][blockDim.x];
+  __shared__ float local_imageSection[const blockDim.y][const blockDim.x];
   int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x];

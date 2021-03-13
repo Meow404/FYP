@@ -1,3 +1,6 @@
+#ifndef KERNELHANDLER
+#define KERNRLHANDLER
+
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>
@@ -28,3 +31,5 @@ public:
     std::vector<kernel> getKernels();
     cv::Mat returnMatrix(int index);
 };
+
+#endif

@@ -3,9 +3,9 @@
 
 #include "../kernelHandler.h"
 
-float *applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
-    // float applyKernelPerPixelConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
-    __global__ void applyKernelPerPixelParallelConstantMemory(float *d_image, float *d_sumArray);
+float *applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
+// float applyKernelPerPixelConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
+__global__ void applyKernelPerPixelParallelConstantMemory(float *d_image, float *d_sumArray);
 
 __constant__ float kernelConstant[KERNEL_DIMENSION * KERNEL_DIMENSION];
 __constant__ int imageWidthConstant;
@@ -103,7 +103,7 @@ void applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int 
         numVerBlocks++;
 
     dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
-    dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH, 1);
+    dim3 dimBlock(blockWidth, blockWidth, 1);
 
     applyKernelPerPixelParallelConstantMemory<<<dimGrid, dimBlock>>>(d_image, d_sumArray);
     cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);

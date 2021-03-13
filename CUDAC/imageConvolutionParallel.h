@@ -95,7 +95,7 @@ float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
     numVerBlocks++;
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
-  dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH, 1);
+  dim3 dimBlock(blockWidth, blockWidth, 1);
 
   applyKernelPerPixelParallel<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
