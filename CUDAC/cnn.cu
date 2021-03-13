@@ -55,7 +55,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 
   printf("%d kernel to be loaded\n", numOfKernels);
 
-  kernel** kernels = loadAllKernels(fp, numOfKernels);
+  kernel **kernels = loadAllKernels(fp, numOfKernels);
 
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
@@ -63,6 +63,8 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 
   for (int i = 0; i < numOfKernels; i++)
   {
+
+    float *result;
     float totalTime = 0.0;
     printf("Kernel Dimension : %dx%d\n", kernels[i]->dimension, kernels[i]->dimension);
 
@@ -76,31 +78,31 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
       switch (option)
       {
       case 1:
-        applyKernelToImageSerial(hData, width, height, *kernels[i], imagePath);
+        result = applyKernelToImageSerial(hData, width, height, *kernels[i], imagePath);
         break;
 
       case 2:
-        applyKernelToImageParallelNaive(hData, width, height, kernels[i], imagePath, BLOCK_WIDTH);
+        result = applyKernelToImageParallelNaive(hData, width, height, kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 3:
-        applyKernelToImageParallelSharedMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        result = applyKernelToImageParallelSharedMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 4:
-        applyKernelToImageParallelConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        result = applyKernelToImageParallelConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 5:
-        applyKernelToImageParallelSharedConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        result = applyKernelToImageParallelSharedConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 6:
-        applyKernelToImageParallelTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        result = applyKernelToImageParallelTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
-      
-        case 7:
-        applyKernelToImageParallel2DTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+
+      case 7:
+        result = applyKernelToImageParallel2DTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       default:
@@ -114,52 +116,61 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
       totalTime += milliseconds;
     }
     printf("Time Serial Average Implementation: %f ms\n", totalTime / ITERATIONS);
+
+    for (int j = 0; j < height; j++)
+    {
+      printf("[%d] : ", j);
+      for (int i = 0; i < width; i++)
+      {
+        printf(" |%3.2f|", result[j * width + i]);
+      }
+      printf("\n");
+    }
   }
-}
 
-int main(int argc, char **argv)
-{
-  printf("Image convolution project \n");
-  printf("Please select an option \n");
-  printf("1 - Serial Implementation \n");
-  printf("2 - Naive parallel implementation \n");
-  printf("3 - Shared memory implementation \n");
-  printf("4 - Constant memory implementation \n");
-  printf("5 - Shared Constant memory implementation \n");
-  printf("6 - Texture memory implementation \n ");
-  int option;
-  scanf("%d", &option);
+  int main(int argc, char **argv)
+  {
+    printf("Image convolution project \n");
+    printf("Please select an option \n");
+    printf("1 - Serial Implementation \n");
+    printf("2 - Naive parallel implementation \n");
+    printf("3 - Shared memory implementation \n");
+    printf("4 - Constant memory implementation \n");
+    printf("5 - Shared Constant memory implementation \n");
+    printf("6 - Texture memory implementation \n ");
+    int option;
+    scanf("%d", &option);
 
-  imageConvolutionParallel(imageFilename, argv, option);
-  // switch (option)
-  // {
-  // case 1:
-  //   imageConvolutionSerial(imageFilename, argv);
-  //   break;
+    imageConvolutionParallel(imageFilename, argv, option);
+    // switch (option)
+    // {
+    // case 1:
+    //   imageConvolutionSerial(imageFilename, argv);
+    //   break;
 
-  // case 2:
-  //   imageConvolutionParallel(imageFilename, argv);
-  //   break;
+    // case 2:
+    //   imageConvolutionParallel(imageFilename, argv);
+    //   break;
 
-  // case 3:
-  //   imageConvolutionParallelSharedMemory(imageFilename, argv);
-  //   break;
+    // case 3:
+    //   imageConvolutionParallelSharedMemory(imageFilename, argv);
+    //   break;
 
-  // case 4:
-  //   imageConvolutionParallelConstantMemory(imageFilename, argv);
-  //   break;
+    // case 4:
+    //   imageConvolutionParallelConstantMemory(imageFilename, argv);
+    //   break;
 
-  // case 5:
-  //   imageConvolutionParallelSharedConstantMemory(imageFilename, argv);
-  //   break;
+    // case 5:
+    //   imageConvolutionParallelSharedConstantMemory(imageFilename, argv);
+    //   break;
 
-  // case 6:
-  //   imageConvolutionParallelTextureMomory(imageFilename, argv);
-  //   break;
+    // case 6:
+    //   imageConvolutionParallelTextureMomory(imageFilename, argv);
+    //   break;
 
-  // default:
-  //   printf("Incorrect input \n");
-  // }
+    // default:
+    //   printf("Incorrect input \n");
+    // }
 
-  return 0;
-}
+    return 0;
+  }
