@@ -164,7 +164,7 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
 
   __syncthreads();
 
-  if (blockIdx.x == 0 && blockIdx.y == 0){
+  if (blockIdx.x == 0 && blockIdx.y == 0 && threadIdx.x == 0 && threadIdx.y == 0){
     printf("\n\n");
          for (int i = 0; i < BLOCK_WIDTH; i++) {
        printf("Line %d : ", i);
@@ -235,6 +235,19 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
       d_sumArray[y * (*d_imageWidth) + x] = sum;
     }
   }
+
+  if (blockIdx.x == 0 && blockIdx.y == 0 && threadIdx.x == 0 && threadIdx.y == 0){
+    printf("\n\n");
+         for (int i = 0; i < BLOCK_WIDTH-KERNELDIMENSION; i++) {
+       printf("Line %d : ", i);
+        for (int j = 0; j < BLOCK_WIDTH-KERNELDIMENSION; j++) {
+            printf("%.2f ", d_sumArray[i*(*d_imageWidth)+j]);
+          //   if((i*width+j) % 15 == 0){
+          //      printf("\n");
+          //  }
+        }
+        printf("\n");
+    }}
 }
 
 #endif
