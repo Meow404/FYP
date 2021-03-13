@@ -10,6 +10,7 @@
 #include "imageConvolutionParallelConstantMemory.h"
 #include "imageConvolutionParallelSharedConstantMemory.h"
 #include "imageConvolutionTextureMemory.h"
+#include "imageConvolution2DTextureMemory.h"
 
 const char *imageFilename = "res//images//lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
@@ -96,6 +97,10 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 
       case 6:
         applyKernelToImageParallelTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        break;
+      
+        case 7:
+        applyKernelToImageParallel2DTextureMomory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       default:

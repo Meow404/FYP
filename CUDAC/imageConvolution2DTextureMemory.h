@@ -3,15 +3,15 @@
 // #define BLOCK_WIDTH 3
 // #define KERNELDIMENSION 13
 
-float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
+float *applyKernelToImageParallel2DTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 // float applyKernelPerPixelTextureMomory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
-__global__ void applyKernelPerPixelParallelTextureMomory(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
+__global__ void applyKernelPerPixelParallel2DTextureMomory(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
 
 //2d texref
-texture<float, cudaTextureType2D, cudaReadModeElementType> texRef;
-texture<float, 1, cudaReadModeElementType> texRef1d;
+texture<float, 2, cudaReadModeElementType> texRef;
+// texture<float, 1, cudaReadModeElementType> texRef1d;
 
-float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
+float *applyKernelToImageParallel2DTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
     int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
     float *d_kernel, *d_image, *d_sumArray;
@@ -36,22 +36,25 @@ float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int
     cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
     cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
-    //Texture memory - 2d attempt
+    // Texture memory - 2d attempt
     // cudaArray *cuArray;
-    // cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0,
-    //                                                           cudaChannelFormatKindFloat);
-
+    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc <float>;
+    cudaBindTexture2D( NULL, texRef,
+    d_image,
+    channelDesc, imageWidth, imageHeight,
+    sizeof(float) * imageWidth );
+    
     // cudaMallocArray(&cuArray, &channelDesc, imageWidth, imageHeight);
     // cudaMemcpyToArray(cuArray, 0, 0, image, sizeImageArray, cudaMemcpyHostToDevice);
 
-    // // texRef1d.addressMode[0] = cudaAddressModeWrap;
-    // // texRef1d.addressMode[1] = cudaAddressModeWrap;
-    // // texRef1d.filterMode = cudaFilterModeLinear;
-    // // texRef1d.normalized = true;
+    // texRef1d.addressMode[0] = cudaAddressModeWrap;
+    // texRef1d.addressMode[1] = cudaAddressModeWrap;
+    // texRef1d.filterMode = cudaFilterModeLinear;
+    // texRef1d.normalized = true;
 
     // cudaBindTextureToArray(texRef, cuArray, channelDesc);
 
-    cudaBindTexture(0, texRef1d, d_image, sizeImageArray);
+    // cudaBindTexture(0, texRef1d, d_image, sizeImageArray);
 
     int width = imageWidth * imageHeight;
     int numBlocks = (imageWidth) / blockWidth;
@@ -59,7 +62,7 @@ float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int
         numBlocks++;
     dim3 dimGrid(numBlocks, numBlocks, 1);
     dim3 dimBlock(blockWidth, blockWidth, 1);
-    applyKernelPerPixelParallelTextureMomory<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
+    applyKernelPerPixelParallel2DTextureMomory<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
     cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
     // CUDA free varibles
@@ -78,7 +81,7 @@ float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int
     // strcpy(outputFilename + strlen(imagePath) - 4, "texture_memory_parallel_out.pgm");
     // sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
 }
-__global__ void applyKernelPerPixelParallelTextureMomory(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
+__global__ void applyKernelPerPixelParallel2DTextureMomory(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
 {
 
     int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -102,7 +105,7 @@ __global__ void applyKernelPerPixelParallelTextureMomory(int *d_kernelDimensionX
                     continue;
 
                 float k = d_kernel[i + j * (*d_kernelDimensionY)];
-                float imageElement = tex1Dfetch(texRef1d, y * (*d_imageWidth) + x + i - offsetX + (*d_imageWidth) * (j - 1));
+                float imageElement = tex2D(texRef, x + i - offsetX , y + j - offsetY);
 
                 //2d aproach no longer used
                 // unsigned int xT = x + i - offsetX + (*d_imageWidth) * (j - 1);
