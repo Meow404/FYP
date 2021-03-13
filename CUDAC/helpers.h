@@ -29,19 +29,19 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
         sscanf(buf, "%d", &kernel_dim);
         printf("Loading kernel with kernel dimesnion %dx%d\n", kernel_dim, kernel_dim);
 
-        kernel kl;
-        kl.dimension = kernel_dim;
-        kl.matrix = (float *)malloc(sizeof(float) * kernel_dim * kernel_dim);
+        kernels[i] = (kernel *)malloc(sizeof(kernel));
+        kernels[i]->dimension = kernel_dim;
+        kernels[i]->matrix = (float *)malloc(sizeof(float) * kernel_dim * kernel_dim);
 
         for (int j = 0; j < kernel_dim; j++)
         {
             // kl.matrix[j] = new float[kernel_dim];
             fgets(buf, sizeof(buf), fp);
 
-            loadRow(kl.matrix, j, kernel_dim, buf);
+            loadRow(kernels[i]->matrix, j, kernel_dim, buf);
         }
-        kernels[i] = (kernel *)malloc(sizeof(kernel));
-        kernels[i] = &kl;
+        
+        // kernels[i] = &kl;
     }
 
     printf("\nNum of kernels : %d", numOfKernels);
