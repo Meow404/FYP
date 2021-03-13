@@ -63,7 +63,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
   for (int i = 0; i < numOfKernels; i++)
   {
     float totalTime = 0.0;
-    printf("Kernel Dimension : %dx%d", kernels[i]->dimension, kernels[i]->dimension);
+    printf("Kernel Dimension : %dx%d\n", kernels[i]->dimension, kernels[i]->dimension);
 
     for (int i = 0; i < ITERATIONS; i++)
     {
@@ -79,7 +79,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
         break;
 
       case 2:
-        applyKernelToImageParallelNaive(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelNaive(hData, width, height, *(kernels[i]), imagePath, BLOCK_WIDTH);
         break;
 
       case 3:
