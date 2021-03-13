@@ -91,7 +91,7 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
   int numBlocks = (imageWidth) / BLOCK_WIDTH;
 
   printf("image width %d image height %d \n ", imageWidth, imageHeight);
-  printf("kernek dimension %d vertical blocks %d \n", kernelDimension;
+  printf("kernek dimension %d vertical blocks %d \n", kernelDimension);
 
   int offsetX = (kernelDimension - 1) / 2;
   int offsetY = (kernelDimension - 1) / 2;
@@ -175,11 +175,11 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
 
   __syncthreads();
 
-  if (blockIdx.x == 0 && blockidx.y == 0)
+  if (blockIdx.x == 0 && blockIdx.y == 0)
          for (int i = 0; i < BLOCK_WIDTH; i++) {
        printf("Line %d : ", i);
         for (int j = 0; j < BLOCK_WIDTH; j++) {
-            printf("%.2f ", local_imageSection[i*imageWidth+j]);
+            printf("%.2f ", local_imageSection[i*(*d_imageWidth)+j]);
           //   if((i*width+j) % 15 == 0){
           //      printf("\n");
           //  }
