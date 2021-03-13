@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
+#include "../kernelHandler.h"
 #include "helpers.h"
 #include "imageConvolutionSerial.h"
 #include "imageConvolutionParallel.h"
@@ -12,7 +13,86 @@
 
 const char *imageFilename = "res//images//lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
-#define KERNELDIMENSION 3
+#define ITERATIONS 100
+#define BLOCK_WIDTH 13
+
+void imageConvolutionParallel(const char *imageFilename, char **argv, int option)
+{
+  // load image from disk
+  float *hData = NULL;
+  unsigned int width, height;
+  char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
+
+  if (imagePath == NULL)
+  {
+    printf("Unable to source image file: %s\n", imageFilename);
+    exit(EXIT_FAILURE);
+  }
+
+  sdkLoadPGM(imagePath, &hData, &width, &height);
+  printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
+
+  //Get Kernels
+  // FILE *fp = fopen("kernels.txt", "r");
+  // if (fp == NULL)
+  // {
+  //   perror("Error in opening file");
+  //   exit(EXIT_FAILURE);
+  // }
+
+  kernelHandler kh = kernelHandler("../kernels.txt");
+
+  for (int i = 0; i < kh.getNumOfKernels(); i++)
+  {
+    float totalTime = 0.0;
+    printf("Kernel Dimension : %dx%d", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
+
+    for (int i = 0; i < ITERATIONS; i++)
+    {
+      cudaEvent_t start, stop;
+      cudaEventCreate(&start);
+      cudaEventCreate(&stop);
+      cudaEventRecord(start);
+
+      switch (option)
+      {
+      case 1:
+        applyKernelToImageSerial(hData, width, height, kh.getKernel(i), imagePath);
+        break;
+
+      case 2:
+        applyKernelToImageParallelNaive(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        break;
+
+      case 3:
+        applyKernelToImageParallelSharedMemory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        break;
+
+      case 4:
+        applyKernelToImageParallelConstantMemory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        break;
+
+      case 5:
+        applyKernelToImageParallelSharedConstantMemory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        break;
+
+      case 6:
+        applyKernelToImageParallelTextureMomory(hData, width, height, kh.getKernel(i), imagePath, BLOCK_WIDTH);
+        break;
+
+      default:
+        printf("Incorrect input \n");
+      }
+      cudaEventRecord(stop);
+      cudaEventSynchronize(stop);
+      float milliseconds = 0;
+      cudaEventElapsedTime(&milliseconds, start, stop);
+      printf("Time Naive Parallel Implementation: %f \n", milliseconds);
+      totalTime += milliseconds;
+    }
+    printf("Time Serial Average Implementation: %f ms\n", totalTime / 10);
+  }
+}
 
 int main(int argc, char **argv)
 {
@@ -27,35 +107,36 @@ int main(int argc, char **argv)
   int option;
   scanf("%d", &option);
 
-  switch (option)
-  {
-  case 1:
-    imageConvolutionSerial(imageFilename, argv);
-    break;
+  imageConvolutionParallel(imageFilename, argv, option);
+  // switch (option)
+  // {
+  // case 1:
+  //   imageConvolutionSerial(imageFilename, argv);
+  //   break;
 
-  case 2:
-    imageConvolutionParallel(imageFilename, argv);
-    break;
+  // case 2:
+  //   imageConvolutionParallel(imageFilename, argv);
+  //   break;
 
-  case 3:
-    imageConvolutionParallelSharedMemory(imageFilename, argv);
-    break;
+  // case 3:
+  //   imageConvolutionParallelSharedMemory(imageFilename, argv);
+  //   break;
 
-  case 4:
-    imageConvolutionParallelConstantMemory(imageFilename, argv);
-    break;
-  
-  case 5:
-    imageConvolutionParallelSharedConstantMemory(imageFilename, argv);
-    break;
-    
-  case 6:
-    imageConvolutionParallelTextureMomory(imageFilename, argv);
-    break;
+  // case 4:
+  //   imageConvolutionParallelConstantMemory(imageFilename, argv);
+  //   break;
 
-  default:
-    printf("Incorrect input \n");
-  }
+  // case 5:
+  //   imageConvolutionParallelSharedConstantMemory(imageFilename, argv);
+  //   break;
+
+  // case 6:
+  //   imageConvolutionParallelTextureMomory(imageFilename, argv);
+  //   break;
+
+  // default:
+  //   printf("Incorrect input \n");
+  // }
 
   return 0;
 }

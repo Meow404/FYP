@@ -1,10 +1,12 @@
 #ifndef IMAGECONVOLUTIONPARALLELSHAREDCONSTANTMEMORY
 #define IMAGECONVOLUTIONPARALLELSHAREDCONSTANTMEMORY
-#define KERNEL_DIMENSION 3
-#define BLOCK_WIDTH 13
+// #define KERNEL_DIMENSION 3
+// #define BLOCK_WIDTH 13
 
-void applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, float *kernel, int kernelDimension, char *imagePath);
-float applyKernelPerPixelSharedConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
+#include "../kernelHandler.h"
+
+float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
+// float applyKernelPerPixelSharedConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, float *d_sumArray);
 
 // __constant__ float kernelConstant[KERNEL_DIMENSION * KERNEL_DIMENSION];
@@ -13,61 +15,61 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
 // __constant__ int kernelDimensionXConstant;
 // __constant__ int kernelDimensionYConstant;
 
-void imageConvolutionParallelSharedConstantMemory(const char *imageFilename, char **argv)
-{
-  // load image from disk
-  float *hData = NULL;
-  unsigned int width, height;
-  char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
+// void imageConvolutionParallelSharedConstantMemory(const char *imageFilename, char **argv)
+// {
+//   // load image from disk
+//   float *hData = NULL;
+//   unsigned int width, height;
+//   char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
 
-  if (imagePath == NULL)
-  {
-    printf("Unable to source image file: %s\n", imageFilename);
-    exit(EXIT_FAILURE);
-  }
+//   if (imagePath == NULL)
+//   {
+//     printf("Unable to source image file: %s\n", imageFilename);
+//     exit(EXIT_FAILURE);
+//   }
 
-  sdkLoadPGM(imagePath, &hData, &width, &height);
-  printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
+//   sdkLoadPGM(imagePath, &hData, &width, &height);
+//   printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
 
-  //Get Kernels
-  FILE *fp = fopen("kernels.txt", "r");
-  if (fp == NULL)
-  {
-    perror("Error in opening file");
-    exit(EXIT_FAILURE);
-  }
-  int numKernels = getNumKernels(fp);
-  int kernelDimension = 3;
+//   //Get Kernels
+//   FILE *fp = fopen("kernels.txt", "r");
+//   if (fp == NULL)
+//   {
+//     perror("Error in opening file");
+//     exit(EXIT_FAILURE);
+//   }
+//   int numKernels = getNumKernels(fp);
+//   int kernelDimension = 3;
 
-  float **kernels = (float **)malloc(sizeof(float *) * numKernels);
-  for (int i = 0; i < numKernels; i++)
-  {
-    kernels[i] = (float *)malloc(sizeof(float) * 100);
-  }
-  loadAllKernels(kernels, fp);
-  fclose(fp);
-  float totalTime = 0.0;
-  for (int i = 0; i < 10; i++)
-  {
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start);
-    for (int i = 0; i < numKernels; i++)
-    {
-      applyKernelToImageParallelSharedConstantMemory(hData, width, height, kernels[i], kernelDimension, imagePath);
-    }
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-    printf("Time Constant Implementation: %f \n", milliseconds);
-    totalTime += milliseconds;
-  }
-  printf("Time Serial Average Implementation: %f ms\n", totalTime / 10);
-}
+//   float **kernels = (float **)malloc(sizeof(float *) * numKernels);
+//   for (int i = 0; i < numKernels; i++)
+//   {
+//     kernels[i] = (float *)malloc(sizeof(float) * 100);
+//   }
+//   loadAllKernels(kernels, fp);
+//   fclose(fp);
+//   float totalTime = 0.0;
+//   for (int i = 0; i < 10; i++)
+//   {
+//     cudaEvent_t start, stop;
+//     cudaEventCreate(&start);
+//     cudaEventCreate(&stop);
+//     cudaEventRecord(start);
+//     for (int i = 0; i < numKernels; i++)
+//     {
+//       applyKernelToImageParallelSharedConstantMemory(hData, width, height, kernels[i], kernelDimension, imagePath);
+//     }
+//     cudaEventRecord(stop);
+//     cudaEventSynchronize(stop);
+//     float milliseconds = 0;
+//     cudaEventElapsedTime(&milliseconds, start, stop);
+//     printf("Time Constant Implementation: %f \n", milliseconds);
+//     totalTime += milliseconds;
+//   }
+//   printf("Time Serial Average Implementation: %f ms\n", totalTime / 10);
+// }
 
-void applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, float *kernel, int kernelDimension, char *imagePath)
+float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
   int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
   float *d_kernel, *d_image, *d_sumArray;
@@ -81,39 +83,40 @@ void applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth
   cudaMalloc((void **)&d_kernelDimensionY, sizeInt);
   cudaMalloc((void **)&d_imageWidth, sizeInt);
   cudaMalloc((void **)&d_imageHeight, sizeInt);
-  cudaMalloc((void **)&d_kernel, KERNEL_DIMENSION * KERNEL_DIMENSION * sizeFloat);
+  cudaMalloc((void **)&d_kernel, kernel.dimension * kernel.dimension * sizeFloat);
   cudaMalloc((void **)&d_image, sizeImageArray);
   cudaMalloc((void **)&d_sumArray, sizeImageArray);
 
   cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
   //constants
-  cudaMemcpyToSymbol(kernelConstant, kernel, sizeof(float) * KERNEL_DIMENSION * KERNEL_DIMENSION);
+  cudaMemcpyToSymbol(kernelConstant, kernel.matrix, sizeof(float) * kernel.dimension * kernel.dimension);
   cudaMemcpyToSymbol(imageWidthConstant, &imageWidth, sizeInt);
   cudaMemcpyToSymbol(imageHeightConstant, &imageHeight, sizeInt);
-  cudaMemcpyToSymbol(kernelDimensionXConstant, &kernelDimension, sizeInt);
-  cudaMemcpyToSymbol(kernelDimensionYConstant, &kernelDimension, sizeInt);
+  cudaMemcpyToSymbol(kernelDimensionXConstant, &kernel.dimension, sizeInt);
+  cudaMemcpyToSymbol(kernelDimensionYConstant, &kernel.dimension, sizeInt);
 
   int overlapX = (kernelDimension + 1) / 2;
   int overlapY = (kernelDimension + 1) / 2;
 
-  int numHorBlocks = (imageWidth) / (BLOCK_WIDTH - overlapX);
-  int numVerBlocks = (imageHeight) / (BLOCK_WIDTH - overlapY);
+  int numHorBlocks = (imageWidth) / (blockWidth - overlapX);
+  int numVerBlocks = (imageHeight) / (blockWidth - overlapY);
 
-  if (imageWidth % (BLOCK_WIDTH - overlapX))
+  if (imageWidth % (blockWidth - overlapX))
     numHorBlocks++;
-  if (imageHeight % (BLOCK_WIDTH - overlapY))
+  if (imageHeight % (blockWidth - overlapY))
     numVerBlocks++;
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
-  dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH, 1);
+  dim3 dimBlock(blockWidth, blockWidth, 1);
   applyKernelPerPixelParallelSharedConstantMemory<<<dimGrid, dimBlock>>>(d_image, d_sumArray);
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
-  char outputFilename[1024];
-  strcpy(outputFilename, imagePath);
-  strcpy(outputFilename + strlen(imagePath) - 4, "_shared_constant_memory_parallel_out.pgm");
-  sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
+  return sumArray;
+  // char outputFilename[1024];
+  // strcpy(outputFilename, imagePath);
+  // strcpy(outputFilename + strlen(imagePath) - 4, "_shared_constant_memory_parallel_out.pgm");
+  // sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
 }
 __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, float *d_sumArray)
 {
@@ -132,7 +135,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  __shared__ float local_imageSection[BLOCK_WIDTH][BLOCK_WIDTH];
+  __shared__ float local_imageSection[blockDim.x][blockDim.y];
   int imageIndex = y * (imageWidthConstant) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (imageWidthConstant) + x];
@@ -140,7 +143,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   __syncthreads();
 
   //Need to fill in if statement ******
-  if ((threadIdx.x >= offsetX || threadIdx.x < BLOCK_WIDTH - offsetX + 1) && (threadIdx.y > offsetY || threadIdx.y < BLOCK_WIDTH - offsetY + 1))
+  if ((threadIdx.x >= offsetX || threadIdx.x < blockDim.x - offsetX + 1) && (threadIdx.y > offsetY || threadIdx.y < blockDim.y - offsetY + 1))
   {
 
     // if ((blockIdx.x == 0 || blockIdx.x == 0) && (blockIdx.y == 1 || blockIdx.y == 1))

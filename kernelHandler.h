@@ -8,7 +8,7 @@ using namespace cv;
 struct kernel
 {
     int dimension;
-    float **matrix;
+    float *matrix;
 };
 
 class kernelHandler
@@ -18,7 +18,7 @@ class kernelHandler
     const char *kernelFilename;
 
     void loadAllKernels();
-    void loadRow(float *row, int kernelDimension, string buf);
+    void loadRow(float *matrix, int row, int kernelDimension, string buf);
 
 public:
     kernelHandler(const char *kernelFilename);

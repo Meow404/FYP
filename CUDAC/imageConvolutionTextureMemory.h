@@ -1,71 +1,73 @@
 #ifndef IMAGECONVOLUTIONPARALLELTEXTUREMEMORY
 #define IMAGECONVOLUTIONPARALLELTEXTUREMEMORY
-#define BLOCK_WIDTH 3
-#define KERNELDIMENSION 13
-void applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, float *kernel, int kernelDimension, char *imagePath);
-float applyKernelPerPixelTextureMomory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
+// #define BLOCK_WIDTH 3
+// #define KERNELDIMENSION 13
+#include "../kernelHandler.h"
+
+float* applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
+// float applyKernelPerPixelTextureMomory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelTextureMomory(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
 
 //2d texref
 texture<float, cudaTextureType2D, cudaReadModeElementType> texRef;
 texture<float, 1, cudaReadModeElementType> texRef1d;
 
-void imageConvolutionParallelTextureMomory(const char *imageFilename, char **argv)
-{
-    // load image from disk
-    float *hData = NULL;
-    unsigned int width, height;
-    char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
+// void imageConvolutionParallelTextureMomory(const char *imageFilename, char **argv)
+// {
+//     // load image from disk
+//     float *hData = NULL;
+//     unsigned int width, height;
+//     char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
 
-    if (imagePath == NULL)
-    {
-        printf("Unable to source image file: %s\n", imageFilename);
-        exit(EXIT_FAILURE);
-    }
+//     if (imagePath == NULL)
+//     {
+//         printf("Unable to source image file: %s\n", imageFilename);
+//         exit(EXIT_FAILURE);
+//     }
 
-    sdkLoadPGM(imagePath, &hData, &width, &height);
-    printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
+//     sdkLoadPGM(imagePath, &hData, &width, &height);
+//     printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
 
-    //Get Kernels
-    FILE *fp = fopen("kernels.txt", "r");
-    if (fp == NULL)
-    {
-        perror("Error in opening file");
-        exit(EXIT_FAILURE);
-    }
-    int numKernels = getNumKernels(fp);
-    // int kernelDimension = 3;
+//     //Get Kernels
+//     FILE *fp = fopen("kernels.txt", "r");
+//     if (fp == NULL)
+//     {
+//         perror("Error in opening file");
+//         exit(EXIT_FAILURE);
+//     }
+//     int numKernels = getNumKernels(fp);
+//     // int kernelDimension = 3;
 
-    float **kernels = (float **)malloc(sizeof(float *) * numKernels);
-    for (int i = 0; i < numKernels; i++)
-    {
-        kernels[i] = (float *)malloc(sizeof(float) * 100);
-    }
-    loadAllKernels(kernels, fp);
-    fclose(fp);
-     float totalTime = 0.0;
-    for (int i = 0; i < 10; i++)
-    {
-        cudaEvent_t start, stop;
-        cudaEventCreate(&start);
-        cudaEventCreate(&stop);
-        cudaEventRecord(start);
+//     float **kernels = (float **)malloc(sizeof(float *) * numKernels);
+//     for (int i = 0; i < numKernels; i++)
+//     {
+//         kernels[i] = (float *)malloc(sizeof(float) * 100);
+//     }
+//     loadAllKernels(kernels, fp);
+//     fclose(fp);
+//      float totalTime = 0.0;
+//     for (int i = 0; i < 10; i++)
+//     {
+//         cudaEvent_t start, stop;
+//         cudaEventCreate(&start);
+//         cudaEventCreate(&stop);
+//         cudaEventRecord(start);
 
-        for (int i = 0; i < numKernels; i++)
-        {
-            applyKernelToImageParallelTextureMomory(hData, width, height, kernels[i], KERNELDIMENSION, imagePath);
-        }
-        cudaEventRecord(stop);
-        cudaEventSynchronize(stop);
-        float milliseconds = 0;
-        cudaEventElapsedTime(&milliseconds, start, stop);
-        printf("Time Texture memory Parallel Implementation: %f \n", milliseconds);
-    totalTime += milliseconds;
-  }
-  printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
-}
+//         for (int i = 0; i < numKernels; i++)
+//         {
+//             applyKernelToImageParallelTextureMomory(hData, width, height, kernels[i], KERNELDIMENSION, imagePath);
+//         }
+//         cudaEventRecord(stop);
+//         cudaEventSynchronize(stop);
+//         float milliseconds = 0;
+//         cudaEventElapsedTime(&milliseconds, start, stop);
+//         printf("Time Texture memory Parallel Implementation: %f \n", milliseconds);
+//     totalTime += milliseconds;
+//   }
+//   printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
+// }
 
-void applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, float *kernel, int kernelDimension, char *imagePath)
+float* applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
     int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
     float *d_kernel, *d_image, *d_sumArray;
@@ -83,11 +85,11 @@ void applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int i
     cudaMalloc((void **)&d_image, sizeImageArray);
     cudaMalloc((void **)&d_sumArray, sizeImageArray);
 
-    cudaMemcpy(d_kernelDimensionX, &kernelDimension, sizeInt, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_kernelDimensionY, &kernelDimension, sizeInt, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_kernelDimensionX, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_kernelDimensionY, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
     cudaMemcpy(d_imageWidth, &imageWidth, sizeInt, cudaMemcpyHostToDevice);
     cudaMemcpy(d_imageHeight, &imageHeight, sizeInt, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_kernel, kernel, 9 * sizeFloat, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_kernel, kernel, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
     cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
     //Texture memory - 2d attempt
@@ -108,19 +110,20 @@ void applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int i
     cudaBindTexture(0, texRef1d, d_image, sizeImageArray);
 
     int width = imageWidth * imageHeight;
-    int numBlocks = (imageWidth) / BLOCK_WIDTH;
-    if (width % BLOCK_WIDTH)
+    int numBlocks = (imageWidth) / blockWidth;
+    if (width % blockWidth)
         numBlocks++;
     dim3 dimGrid(numBlocks, numBlocks, 1);
-    dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH, 1);
+    dim3 dimBlock(blockWidth, blockWidth, 1);
     applyKernelPerPixelParallelTextureMomory<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
     cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
+    return sumArray
     //printImage(sumArray,imageWidth,imageHeight,"newImageP.txt");
-    char outputFilename[1024];
-    strcpy(outputFilename, imagePath);
-    strcpy(outputFilename + strlen(imagePath) - 4, "texture_memory_parallel_out.pgm");
-    sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
+    // char outputFilename[1024];
+    // strcpy(outputFilename, imagePath);
+    // strcpy(outputFilename + strlen(imagePath) - 4, "texture_memory_parallel_out.pgm");
+    // sdkSavePGM(outputFilename, sumArray, imageWidth, imageHeight);
 }
 __global__ void applyKernelPerPixelParallelTextureMomory(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
 {

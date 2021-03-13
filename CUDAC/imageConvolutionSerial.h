@@ -1,70 +1,73 @@
 #ifndef IMAGECONVOLUTIONSERIAL
 #define IMAGECONVOLUTIONSERIAL
-#define KERNELDIMENSION 3
+// #define KERNELDIMENSION 3
 
-void applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, float *kernel, int kernelDimension, char *imagePath);
-void flipKernel(float *kernel, int kernelDimension);
-void loadAllKernels(float **kernels, FILE *fp);
-int getNumKernels(FILE *fp);
+#include "../kernelHandler.h"
+
+float* applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath);
+// void flipKernel(float *kernel, int kernelDimension);
+// void loadAllKernels(float **kernels, FILE *fp);
+// int getNumKernels(FILE *fp);
 float applyKernelPerPixel(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 
-void imageConvolutionSerial(const char *imageFilename, char **argv)
-{
-  // load image from disk
-  float *hData = NULL;
-  unsigned int width, height;
-  char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
+// void imageConvolutionSerial(const char *imageFilename, char **argv)
+// {
+//   // load image from disk
+//   float *hData = NULL;
+//   unsigned int width, height;
+//   char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
 
-  if (imagePath == NULL)
-  {
-    printf("Unable to source image file: %s\n", imageFilename);
-    exit(EXIT_FAILURE);
-  }
+//   if (imagePath == NULL)
+//   {
+//     printf("Unable to source image file: %s\n", imageFilename);
+//     exit(EXIT_FAILURE);
+//   }
 
-  sdkLoadPGM(imagePath, &hData, &width, &height);
-  printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
+//   sdkLoadPGM(imagePath, &hData, &width, &height);
+//   printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
 
-  //Get Kernels
-  FILE *fp = fopen("kernels.txt", "r");
-  if (fp == NULL)
-  {
-    perror("Error in opening file");
-    exit(EXIT_FAILURE);
-  }
+//   //Get Kernels
+//   FILE *fp = fopen("kernels.txt", "r");
+//   if (fp == NULL)
+//   {
+//     perror("Error in opening file");
+//     exit(EXIT_FAILURE);
+//   }
 
-  int numKernels = getNumKernels(fp);
-  // int kernelDimension = 3;
+//   int numKernels = getNumKernels(fp);
+//   // int kernelDimension = 3;
 
-  float **kernels = (float **)malloc(sizeof(float *) * numKernels);
-  for (int i = 0; i < numKernels; i++)
-  {
-    kernels[i] = (float *)malloc(sizeof(float) * 100);
-  }
-  loadAllKernels(kernels, fp);
+//   float **kernels = (float **)malloc(sizeof(float *) * numKernels);
+//   for (int i = 0; i < numKernels; i++)
+//   {
+//     kernels[i] = (float *)malloc(sizeof(float) * 100);
+//   }
+//   loadAllKernels(kernels, fp);
 
-  fclose(fp);
-  float totalTime = 0.0;
-  for (int i = 0; i < 10; i++)
-  {
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start);
+//   fclose(fp);
+//   float totalTime = 0.0;
+//   for (int i = 0; i < 10; i++)
+//   {
+//     cudaEvent_t start, stop;
+//     cudaEventCreate(&start);
+//     cudaEventCreate(&stop);
+//     cudaEventRecord(start);
 
-    for (int i = 0; i < numKernels; i++)
-    {
-      applyKernelToImageSerial(hData, width, height, kernels[i], KERNELDIMENSION, imagePath);
-    }
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-    printf("Time Serial Implementation: %f ms\n", milliseconds);
-    totalTime += milliseconds;
-  }
-  printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
-}
-void applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, float *kernel, int kernelDimension, char *imagePath)
+//     for (int i = 0; i < numKernels; i++)
+//     {
+//       applyKernelToImageSerial(hData, width, height, kernels[i], KERNELDIMENSION, imagePath);
+//     }
+//     cudaEventRecord(stop);
+//     cudaEventSynchronize(stop);
+//     float milliseconds = 0;
+//     cudaEventElapsedTime(&milliseconds, start, stop);
+//     printf("Time Serial Implementation: %f ms\n", milliseconds);
+//     totalTime += milliseconds;
+//   }
+//   printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
+// }
+
+float* applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath)
 {
   //printImage(image,imageWidth,imageHeight,"originalImage.txt");
   unsigned int size = imageWidth * imageHeight * sizeof(float);
@@ -73,7 +76,7 @@ void applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, flo
   {
     for (int x = 0; x < imageWidth; x++)
     {
-      float sum = applyKernelPerPixel(y, x, kernelDimension, kernelDimension, imageWidth, imageHeight, kernel, image);
+      float sum = applyKernelPerPixel(y, x, kernel.dimension, kernel.dimension, imageWidth, imageHeight, kernel.matrix, image);
       //Normalising output
       // if (sum < 0)
       //   sum = 0;
@@ -82,10 +85,12 @@ void applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, flo
       newImage[y * imageWidth + x] = sum;
     }
   }
-  char outputFilename[1024];
-  strcpy(outputFilename, imagePath);
-  strcpy(outputFilename + strlen(imagePath) - 4, "_serial_out.pgm");
-  sdkSavePGM(outputFilename, newImage, imageWidth, imageHeight);
+
+  return newImage;
+  // char outputFilename[1024];
+  // strcpy(outputFilename, imagePath);
+  // strcpy(outputFilename + strlen(imagePath) - 4, "_serial_out.pgm");
+  // sdkSavePGM(outputFilename, newImage, imageWidth, imageHeight);
 }
 
 float applyKernelPerPixel(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image)

@@ -36,26 +36,26 @@ void kernelHandler::loadAllKernels()
 
         kernel kl;
         kl.dimension = kernel_dim;
-        kl.matrix = new float *[kernel_dim];
+        kl.matrix = new float[kernel_dim*kernel_dim];
 
         for (int j = 0; j < kernel_dim; j++)
         {
-            kl.matrix[j] = new float[kernel_dim];
+            // kl.matrix[j] = new float[kernel_dim];
             std::getline(file, str);
-            loadRow(kl.matrix[j], kernel_dim, str);
+            loadRow(kl.matrix, j, kernel_dim, str);
         }
         kernels.push_back(kl);
     }
 }
 
-void kernelHandler::loadRow(float *row, int kernelDimension, string buf)
+void kernelHandler::loadRow(float *matrix, int row, int kernelDimension, string buf)
 {
     std::stringstream ss(buf);
     for (int i = 0; i < kernelDimension; i++)
     {
         string substr;
         getline(ss, substr, ',');
-        row[i] = std::stof(substr);
+        matrix[row*kernelDimension + i] = std::stof(substr);
     }
 }
 
@@ -70,7 +70,7 @@ void kernelHandler::printKernel()
             printf("\n");
             for (int j = 0; j < kernels[k].dimension; j++)
             {
-                printf("%f ", kernels[k].matrix[i][j]);
+                printf("%f ", kernels[k].matrix[i*kernels[k].dimension + j]);
             }
         }
         std::cout << "\n====================================";
@@ -100,7 +100,7 @@ cv::Mat kernelHandler::returnMatrix(int index)
     {
         for (int j = 0; j <kernels[index].dimension; j++)
         {
-            mat.at<float>(i,j) = kernels[index].matrix[i][j];
+            mat.at<float>(i,j) = kernels[index].matrix[i*kernels[k].dimension + j];
         }
     }
     return mat;
