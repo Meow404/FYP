@@ -40,6 +40,7 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
 
             loadRow(kl.matrix, j, kernel_dim, buf);
         }
+        kernels[i] = (kernel *)malloc(sizeof(kernel));
         kernels[i] = &kl;
     }
 
