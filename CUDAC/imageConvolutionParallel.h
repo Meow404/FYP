@@ -2,7 +2,7 @@
 #define IMAGECONVOLUTIONPARALLEL
 
 
-float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
+float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth);
 __global__ void applyKernelPerPixelParallel(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
 
 // void imageConvolutionParallel(const char *imageFilename, char **argv)
@@ -60,8 +60,17 @@ __global__ void applyKernelPerPixelParallel(int *kernelX, int *kernelY, int *ima
 //   printf("Time Serial Average Implementation: %f ms\n", totalTime/10);
 // }
 
-float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
+float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth)
 {
+        for (int i = 0; i < kernel->dimension; i++)
+        {
+            printf("\n");
+            for (int j = 0; j < kernel->dimension; j++)
+            {
+                printf("%f ", kernel->matrix[i*kernel->dimension + j]);
+            }
+        }
+  
   int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
   float *d_kernel, *d_image, *d_sumArray;
 
@@ -74,15 +83,15 @@ float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
   cudaMalloc((void **)&d_kernelDimensionY, sizeInt);
   cudaMalloc((void **)&d_imageWidth, sizeInt);
   cudaMalloc((void **)&d_imageHeight, sizeInt);
-  cudaMalloc((void **)&d_kernel, kernel.dimension * kernel.dimension * sizeFloat);
+  cudaMalloc((void **)&d_kernel, kernel->dimension * kernel->dimension * sizeFloat);
   cudaMalloc((void **)&d_image, sizeImageArray);
   cudaMalloc((void **)&d_sumArray, sizeImageArray);
 
-  cudaMemcpy(d_kernelDimensionX, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_kernelDimensionY, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernelDimensionX, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernelDimensionY, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageWidth, &imageWidth, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageHeight, &imageHeight, sizeInt, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernel, kernel->matrix, kernel->dimension * kernel->dimension * sizeFloat, cudaMemcpyHostToDevice);
   cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
   int numHorBlocks = imageWidth / blockWidth;

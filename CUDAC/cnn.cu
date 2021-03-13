@@ -13,7 +13,7 @@
 
 const char *imageFilename = "res//images//lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
-#define ITERATIONS 100
+#define ITERATIONS 1
 #define BLOCK_WIDTH 13
 
 void imageConvolutionParallel(const char *imageFilename, char **argv, int option)
@@ -79,7 +79,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
         break;
 
       case 2:
-        applyKernelToImageParallelNaive(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelNaive(hData, width, height, kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 3:
