@@ -79,6 +79,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
         break;
 
       case 2:
+        printf("Hi");
         applyKernelToImageParallelNaive(hData, width, height, kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
