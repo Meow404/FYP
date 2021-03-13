@@ -79,7 +79,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
         break;
 
       case 2:
-        applyKernelToImageParallelNaive(hData, width, height, *(kernels[i]), imagePath, BLOCK_WIDTH);
+        applyKernelToImageParallelNaive(hData, width, height, kernels[i], imagePath, BLOCK_WIDTH);
         break;
 
       case 3:
