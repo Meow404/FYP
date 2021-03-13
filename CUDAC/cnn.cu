@@ -126,6 +126,11 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
       }
       printf("\n");
     }
+
+    char outputFilename[1024];
+    strcpy(outputFilename, imagePath);
+    strcpy(outputFilename + strlen(imagePath) - 4, "2d_texture_memory_parallel_out.pgm");
+    sdkSavePGM(outputFilename, result, width, height);
   }
 }
 
