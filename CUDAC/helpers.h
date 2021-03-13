@@ -8,6 +8,7 @@ void flipKernel(float* kernel, int kernelDimension);
 void loadKernels(float * kernel, char buf[512]);
 void loadAllKernels(float ** kernels,  FILE* fp);
 int getNumKernels(FILE* fp);
+void loadRow(float * matrix, int row, int kernel_dim, char buf[512]);
 
 struct kernel
 {
@@ -18,7 +19,6 @@ struct kernel
 kernel** loadAllKernels(FILE* fp, int numOfKernels){   
     char buf[512];
     int index = 0;
-    int numOfKernels;
 
     kernel **kernels = (kernel **)malloc(sizeof(kernel *) * numOfKernels);
 
