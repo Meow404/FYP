@@ -93,15 +93,15 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
   printf("image width %d image height %d \n ", imageWidth, imageHeight);
   printf("kernel dimension %d \n", kernelDimension);
 
-  int offsetX = (kernelDimension - 1) / 2;
-  int offsetY = (kernelDimension - 1) / 2;
+  int overlapX = (kernelDimension + 1) / 2;
+  int overlapY = (kernelDimension + 1) / 2;
 
-  int numHorBlocks = (imageWidth) / (BLOCK_WIDTH - kernelDimension);
-  int numVerBlocks = (imageHeight) / (BLOCK_WIDTH - kernelDimension);
+  int numHorBlocks = (imageWidth) / (BLOCK_WIDTH - overlapX);
+  int numVerBlocks = (imageHeight) / (BLOCK_WIDTH - overlapY);
 
-  if (imageWidth % (BLOCK_WIDTH - kernelDimension))
+  if (imageWidth % (BLOCK_WIDTH - overlapX))
     numHorBlocks++;
-  if (imageHeight % (BLOCK_WIDTH - kernelDimension))
+  if (imageHeight % (BLOCK_WIDTH - overlapY))
     numVerBlocks++;
 
   printf("Horizontal blocks %d vertical blocks %d \n\n", numHorBlocks, numVerBlocks);
@@ -148,8 +148,12 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int comp = 45;
   int offsetX = (*d_kernelDimensionX - 1) / 2;
   int offsetY = (*d_kernelDimensionY - 1) / 2;
-  int y = blockIdx.y * (blockDim.y - *d_kernelDimensionY + 1) + threadIdx.y;
-  int x = blockIdx.x * (blockDim.x - *d_kernelDimensionX + 1) + threadIdx.x;
+
+  int overlapX = (*d_kernelDimensionX + 1) / 2;
+  int overlapY = (*d_kernelDimensionX + 1) / 2;
+
+  int y = blockIdx.y * (blockDim.y - overlapX + 1) + threadIdx.y;
+  int x = blockIdx.x * (blockDim.x - overlapY + 1) + threadIdx.x;
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -164,7 +168,6 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
 
   __syncthreads();
 
-  //Need to fill in if statement ******
   if ((threadIdx.x >= offsetX || threadIdx.x < BLOCK_WIDTH - offsetX + 1) && (threadIdx.y > offsetY || threadIdx.y < BLOCK_WIDTH - offsetY + 1))
   {
 
@@ -185,29 +188,17 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
         for (int i = 0; i < *d_kernelDimensionX; i++)
         {
           //Ignore out of bounds
-          if (
-              col + i - offsetX < 0)
+          if (col + i - offsetX < 0)
           {
             continue;
           }
+
           float value;
-          if (blockIdx.x > 0 && (threadIdx.x == 0))
-          {
-            continue;
-          } // left apron
 
-          else if ((threadIdx.x == (blockDim.x - 1) || (threadIdx.x + j - offsetY) > blockDim.x - 1)) // right apron
-          {
-            continue;
-          }
-          else
-          {
+          float k = d_kernel[i + j * (*d_kernelDimensionY)];
+          float imageElement = local_imageSection[row + j - offsetY][col + i - offsetX];
 
-            float k = d_kernel[i + j * (*d_kernelDimensionY)];
-            float imageElement = local_imageSection[row + j - offsetY][col + i - offsetX];
-
-            value = k * imageElement;
-          }
+          value = k * imageElement;
           sum = sum + value;
         }
       }
