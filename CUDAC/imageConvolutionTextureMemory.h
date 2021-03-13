@@ -8,7 +8,7 @@ float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int
 __global__ void applyKernelPerPixelParallelTextureMomory(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
 
 //2d texref
-texture<float, cudaTextureType2D, cudaReadModeElementType> texRef;
+// texture<float, cudaTextureType2D, cudaReadModeElementType> texRef;
 texture<float, 1, cudaReadModeElementType> texRef1d;
 
 float *applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)

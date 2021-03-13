@@ -38,7 +38,7 @@ float *applyKernelToImageParallel2DTextureMomory(float *image, int imageWidth, i
 
     // Texture memory - 2d attempt
     // cudaArray *cuArray;
-    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc <float>;
+    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
     cudaBindTexture2D( NULL, texRef,
     d_image,
     channelDesc, imageWidth, imageHeight,
