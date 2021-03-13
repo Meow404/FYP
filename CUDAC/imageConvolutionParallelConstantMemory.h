@@ -6,7 +6,7 @@ float* applyKernelToImageParallelConstantMemory(float *image, int imageWidth, in
 // float applyKernelPerPixelConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelConstantMemory(float *d_image, float *d_sumArray);
 
-__constant__ float kernelConstant[128 * 128];
+__constant__ float kernelConstant[10 * 10];
 __constant__ int imageWidthConstant;
 __constant__ int imageHeightConstant;
 __constant__ int kernelDimensionXConstant;
