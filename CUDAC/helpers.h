@@ -18,7 +18,6 @@ struct kernel
 
 kernel** loadAllKernels(FILE* fp, int numOfKernels){   
     char buf[512];
-    int index = 0;
 
     kernel **kernels = (kernel **)malloc(sizeof(kernel *) * numOfKernels);
 

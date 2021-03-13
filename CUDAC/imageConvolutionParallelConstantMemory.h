@@ -13,7 +13,6 @@ __constant__ int kernelDimensionYConstant;
 
 float *applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
-    int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
     float *d_kernel, *d_image, *d_sumArray;
 
     int sizeInt = sizeof(int);
@@ -81,7 +80,7 @@ __global__ void applyKernelPerPixelParallelConstantMemory(float *d_image, float 
                 sum = sum + value;
             }
         }
-        int imageIndex = y * (imageHeightConstant) + x;
+        // int imageIndex = y * (imageHeightConstant) + x;
 
         // if (sum < 0)
         //     sum = 0;

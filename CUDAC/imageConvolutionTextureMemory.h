@@ -119,7 +119,7 @@ __global__ void applyKernelPerPixelParallelTextureMomory(int *d_kernelDimensionX
                 sum = sum + value;
             }
         }
-        int imageIndex = y * (*d_imageWidth) + x;
+        // int imageIndex = y * (*d_imageWidth) + x;
         // if (sum < 0)
         //     sum = 0;
         // else if (sum > 1)

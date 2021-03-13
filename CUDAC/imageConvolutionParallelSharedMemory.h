@@ -71,7 +71,7 @@ float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int 
 
 __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
 {
-  int comp = 45;
+  // int comp = 45;
   int offsetX = (*d_kernelDimensionX - 1) / 2;
   int offsetY = (*d_kernelDimensionY - 1) / 2;
 
@@ -86,11 +86,8 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  const int blockWidthX = blockDim.x;
-  const int blockWidthY = blockDim.y;
-
   __shared__ float local_imageSection[28][28];
-  int imageIndex = y * (*d_imageWidth) + x;
+  // int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x];
 

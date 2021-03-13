@@ -91,7 +91,7 @@ __global__ void applyKernelPerPixelParallel(int *d_kernelDimensionX, int *d_kern
         sum = sum + value;
       }
     }
-    int imageIndex = y * (*d_imageWidth) + x;
+    // int imageIndex = y * (*d_imageWidth) + x;
     // //Normalising output
     // if (sum < 0)
     //   sum = 0;

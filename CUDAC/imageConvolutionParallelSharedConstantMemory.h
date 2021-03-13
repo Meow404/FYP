@@ -15,7 +15,6 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
 
 float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
-  int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
   float *d_kernel, *d_image, *d_sumArray;
 
   int sizeInt = sizeof(int);
@@ -59,15 +58,15 @@ float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWid
 }
 __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, float *d_sumArray)
 {
-  int comp = 45;
+  // int comp = 45;
   int offsetX = (kernelDimensionXConstant - 1) / 2;
   int offsetY = (kernelDimensionYConstant - 1) / 2;
 
   int overlapX = (kernelDimensionXConstant + 1) / 2;
   int overlapY = (kernelDimensionYConstant + 1) / 2;
 
-  int y = blockIdx.y * (blockDim.y - offsetX + 1) + threadIdx.y;
-  int x = blockIdx.x * (blockDim.x - offsetY + 1) + threadIdx.x;
+  int y = blockIdx.y * (blockDim.y - overlapY + 1) + threadIdx.y;
+  int x = blockIdx.x * (blockDim.x - overlapX + 1) + threadIdx.x;
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -75,7 +74,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int col = threadIdx.x;
 
   __shared__ float local_imageSection[28][28];
-  int imageIndex = y * (imageWidthConstant) + x;
+  // int imageIndex = y * (imageWidthConstant) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (imageWidthConstant) + x];
 
