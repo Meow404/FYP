@@ -15,7 +15,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
 
 float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
-  float *d_kernel, *d_image, *d_sumArray;
+  float *d_image, *d_sumArray;
 
   int sizeInt = sizeof(int);
   int sizeFloat = sizeof(float);
