@@ -90,8 +90,8 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
   int width = imageWidth * imageHeight;
   int numBlocks = (imageWidth) / BLOCK_WIDTH;
 
-  printf("image width %d image height %d \n ", imageWidth, imageHeight);
-  printf("kernel dimension %d \n", kernelDimension);
+  // printf("image width %d image height %d \n ", imageWidth, imageHeight);
+  // printf("kernel dimension %d \n", kernelDimension);
 
   int overlapX = (kernelDimension + 1) / 2;
   int overlapY = (kernelDimension + 1) / 2;
@@ -104,7 +104,7 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
   if (imageHeight % (BLOCK_WIDTH - overlapY))
     numVerBlocks++;
 
-  printf("Horizontal blocks %d vertical blocks %d \n\n", numHorBlocks, numVerBlocks);
+  // printf("Horizontal blocks %d vertical blocks %d \n\n", numHorBlocks, numVerBlocks);
 
   // int numHorBlocks = (imageWidth) / BLOCK_WIDTH;
   // int numVerBlocks = (imageHeight) / BLOCK_WIDTH;
