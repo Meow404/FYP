@@ -94,12 +94,18 @@ void applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth
   cudaMemcpyToSymbol(kernelDimensionXConstant, &kernelDimension, sizeInt);
   cudaMemcpyToSymbol(kernelDimensionYConstant, &kernelDimension, sizeInt);
 
-  int width = imageWidth * imageHeight;
-  int numBlocks = (imageWidth) / BLOCK_WIDTH;
-  if (width % BLOCK_WIDTH)
-    numBlocks++;
+  int overlapX = (kernelDimension + 1) / 2;
+  int overlapY = (kernelDimension + 1) / 2;
 
-  dim3 dimGrid(numBlocks, numBlocks, 1);
+  int numHorBlocks = (imageWidth) / (BLOCK_WIDTH - overlapX);
+  int numVerBlocks = (imageHeight) / (BLOCK_WIDTH - overlapY);
+
+  if (imageWidth % (BLOCK_WIDTH - overlapX))
+    numHorBlocks++;
+  if (imageHeight % (BLOCK_WIDTH - overlapY))
+    numVerBlocks++;
+
+  dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
   dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH, 1);
   applyKernelPerPixelParallelSharedConstantMemory<<<dimGrid, dimBlock>>>(d_image, d_sumArray);
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
@@ -114,8 +120,12 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int comp = 45;
   int offsetX = (kernelDimensionXConstant - 1) / 2;
   int offsetY = (kernelDimensionYConstant - 1) / 2;
-  int y = blockIdx.y * (blockDim.y - kernelDimensionXConstant + 1) + threadIdx.y;
-  int x = blockIdx.x * (blockDim.x - kernelDimensionYConstant + 1) + threadIdx.x;
+
+  int overlapX = (kernelDimensionXConstant + 1) / 2;
+  int overlapY = (kernelDimensionYConstant + 1) / 2;
+
+  int y = blockIdx.y * (blockDim.y - offsetX + 1) + threadIdx.y;
+  int x = blockIdx.x * (blockDim.x - offsetY + 1) + threadIdx.x;
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -156,23 +166,11 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
             continue;
           }
           float value;
-          if (blockIdx.x > 0 && (threadIdx.x == 0))
-          {
-            continue;
-          } // left apron
 
-          else if ((threadIdx.x == (blockDim.x - 1) || (threadIdx.x + j - offsetY) > blockDim.x - 1)) // right apron
-          {
-            continue;
-          }
-          else
-          {
+          float k = kernelConstant[i + j * (kernelDimensionYConstant)];
+          float imageElement = local_imageSection[row + j - offsetY][col + i - offsetX];
 
-            float k = kernelConstant[i + j * (kernelDimensionYConstant)];
-            float imageElement = local_imageSection[row + j - offsetY][col + i - offsetX];
-
-            value = k * imageElement;
-          }
+          value = k * imageElement;
           sum = sum + value;
         }
       }
