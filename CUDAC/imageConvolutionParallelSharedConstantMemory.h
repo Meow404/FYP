@@ -3,7 +3,6 @@
 // #define KERNEL_DIMENSION 3
 // #define BLOCK_WIDTH 13
 
-#include "../kernelHandler.h"
 
 float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 // float applyKernelPerPixelSharedConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);

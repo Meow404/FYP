@@ -2,7 +2,6 @@
 #define IMAGECONVOLUTIONPARALLELTEXTUREMEMORY
 // #define BLOCK_WIDTH 3
 // #define KERNELDIMENSION 13
-#include "../kernelHandler.h"
 
 float* applyKernelToImageParallelTextureMomory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 // float applyKernelPerPixelTextureMomory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);

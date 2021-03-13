@@ -2,7 +2,6 @@
 #define IMAGECONVOLUTIONSERIAL
 // #define KERNELDIMENSION 3
 
-#include "../kernelHandler.h"
 
 float* applyKernelToImageSerial(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath);
 // void flipKernel(float *kernel, int kernelDimension);

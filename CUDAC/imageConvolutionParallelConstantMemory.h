@@ -1,7 +1,6 @@
 #ifndef IMAGECONVOLUTIONPARALLELCONSTANTMEMORY
 #define IMAGECONVOLUTIONPARALLELCONSTANTMEMORY
 
-#include "../kernelHandler.h"
 
 float *applyKernelToImageParallelConstantMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 // float applyKernelPerPixelConstantMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);

@@ -1,7 +1,6 @@
 #ifndef IMAGECONVOLUTIONPARALLEL
 #define IMAGECONVOLUTIONPARALLEL
 
-#include "../kernelHandler.h"
 
 float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 __global__ void applyKernelPerPixelParallel(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
