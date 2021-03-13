@@ -119,10 +119,10 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 
     for (int j = 0; j < height; j++)
     {
-      printf("[%d] : ", j);
+      printf("[%3d] : ", j);
       for (int i = 0; i < width; i++)
       {
-        printf(" |%3.2f|", result[j * width + i]);
+        printf(" |%5.2f|", result[j * width + i]);
       }
       printf("\n");
     }
