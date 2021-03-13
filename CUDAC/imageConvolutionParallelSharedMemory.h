@@ -90,6 +90,9 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
   int width = imageWidth * imageHeight;
   int numBlocks = (imageWidth) / BLOCK_WIDTH;
 
+  printf("image width %d image height %d \n ", imageWidth, imageHeight);
+  printf("kernek dimension %d vertical blocks %d \n", kernelDimension;
+
   int offsetX = (kernelDimension - 1) / 2;
   int offsetY = (kernelDimension - 1) / 2;
 
@@ -100,6 +103,19 @@ void applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int im
     numHorBlocks++;
   if (imageHeight % (BLOCK_WIDTH - kernelDimension))
     numVerBlocks++;
+
+  printf("Horizontal blocks %d vertical blocks %d \n\n", numHorBlocks, numVerBlocks);
+
+       for (int i = 0; i < BLOCK_WIDTH; i++) {
+       printf("Line %d : ", i);
+        for (int j = 0; j < BLOCK_WIDTH; j++) {
+            printf("%.2f ", sumArray[i*imageWidth+j]);
+          //   if((i*width+j) % 15 == 0){
+          //      printf("\n");
+          //  }
+        }
+        printf("\n");
+    }
 
   // int numHorBlocks = (imageWidth) / BLOCK_WIDTH;
   // int numVerBlocks = (imageHeight) / BLOCK_WIDTH;
@@ -155,8 +171,21 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x];
+  
 
   __syncthreads();
+
+  if (blockIdx.x == 0 && blockidx.y == 0)
+         for (int i = 0; i < BLOCK_WIDTH; i++) {
+       printf("Line %d : ", i);
+        for (int j = 0; j < BLOCK_WIDTH; j++) {
+            printf("%.2f ", local_imageSection[i*imageWidth+j]);
+          //   if((i*width+j) % 15 == 0){
+          //      printf("\n");
+          //  }
+        }
+        printf("\n");
+    }
 
   //Need to fill in if statement ******
   if ((threadIdx.x >= offsetX || threadIdx.x < BLOCK_WIDTH - offsetX + 1) && (threadIdx.y > offsetY || threadIdx.y < BLOCK_WIDTH - offsetY + 1))
