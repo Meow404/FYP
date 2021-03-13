@@ -20,6 +20,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 {
   // load image from disk
   float *hData = NULL;
+  char buf[512];
   unsigned int width, height;
   char *imagePath = sdkFindFilePath(imageFilename, argv[0]);
 
