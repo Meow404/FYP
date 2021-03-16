@@ -6,6 +6,7 @@
 float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
 // float applyKernelPerPixelSharedMemory(int y, int x, int kernelX, int kernelY, int imageWidth, int imageHeight, float *kernel, float *image);
 __global__ void applyKernelPerPixelParallelSharedMemory(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
+extern __shared__ float local_imageSection[][110];
 
 float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
@@ -46,7 +47,7 @@ float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int 
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
   dim3 dimBlock(blockWidth, blockWidth, 1);
-  applyKernelPerPixelParallelSharedMemory<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
+  applyKernelPerPixelParallelSharedMemory<<<dimGrid, dimBlock, blockWidth*blockWidth*sizeFloat>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
 
   cudaError_t errSync = cudaGetLastError();
   cudaError_t errAsync = cudaDeviceSynchronize();
@@ -86,7 +87,7 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  __shared__ float local_imageSection[28][28];
+  // __shared__ float local_imageSection[28][28];
   // int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x];
