@@ -1,6 +1,6 @@
 #ifndef IMAGECONVOLUTIONPARALLELSHAREDMEMORY
 #define IMAGECONVOLUTIONPARALLELSHAREDMEMORY
-// #define KERNELDIMENSION 3
+#define KERNEL_OFFSET 3
 // #define BLOCK_WIDTH 13
 
 float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth);
@@ -36,12 +36,12 @@ float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int 
   int overlapX = (kernel.dimension + 1) / 2;
   int overlapY = (kernel.dimension + 1) / 2;
 
-  int numHorBlocks = (imageWidth) / (blockWidth - overlapX);
-  int numVerBlocks = (imageHeight) / (blockWidth - overlapY);
+  int numHorBlocks = (imageWidth) / (blockWidth - KERNEL_OFFSET);
+  int numVerBlocks = (imageHeight) / (blockWidth - KERNEL_OFFSET );
 
-  if (imageWidth % (blockWidth - overlapX))
+  if (imageWidth % (blockWidth - KERNEL_OFFSET))
     numHorBlocks++;
-  if (imageHeight % (blockWidth - overlapY))
+  if (imageHeight % (blockWidth - KERNEL_OFFSET ))
     numVerBlocks++;
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
@@ -78,8 +78,8 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int overlapX = (*d_kernelDimensionX + 1) / 2;
   int overlapY = (*d_kernelDimensionY + 1) / 2;
 
-  int y = blockIdx.y * (blockDim.y - overlapY + 1) + threadIdx.y;
-  int x = blockIdx.x * (blockDim.x - overlapX + 1) + threadIdx.x;
+  int y = blockIdx.y * (blockDim.y - KERNEL_OFFSET + 1) + threadIdx.y;
+  int x = blockIdx.x * (blockDim.x - KERNEL_OFFSET  + 1) + threadIdx.x;
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
