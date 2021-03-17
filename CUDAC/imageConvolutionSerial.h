@@ -48,7 +48,7 @@ float applyKernelPerPixel(int y, int x, int kernelX, int kernelY, int imageWidth
         continue;
 
       float k = kernel[i + j * kernelY];
-      float imageElement = image[y * imageWidth + imageWidth * (j - 1) + x + i - offsetX];
+      float imageElement = image[y * imageWidth + imageWidth * (j - offsetY) + x + i - offsetX];
       float value = k * imageElement;
       sum = sum + value;
     }
