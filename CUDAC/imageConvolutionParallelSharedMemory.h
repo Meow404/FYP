@@ -33,15 +33,15 @@ float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int 
   cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
   cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
-  int offsetX = (kernel.dimension - 1) / 2;
-  int offsetY = (kernel.dimension - 1) / 2;
+  int overlapX = (kernel.dimension - 1) / 2;
+  int overlapY = (kernel.dimension - 1) / 2;
 
-  int numHorBlocks = (imageWidth) / (blockWidth - offsetX);
-  int numVerBlocks = (imageHeight) / (blockWidth - offsetY );
+  int numHorBlocks = (imageWidth) / (blockWidth - overlapX);
+  int numVerBlocks = (imageHeight) / (blockWidth - overlapY );
 
-  if (imageWidth % (blockWidth - offsetX))
+  if (imageWidth % (blockWidth - overlapX))
     numHorBlocks++;
-  if (imageHeight % (blockWidth - offsetY))
+  if (imageHeight % (blockWidth - overlapY))
     numVerBlocks++;
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
@@ -78,8 +78,8 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int overlapX = (*d_kernelDimensionX + 1) / 2;
   int overlapY = (*d_kernelDimensionY + 1) / 2;
 
-  int y = blockIdx.y * (blockDim.y - offsetX) + threadIdx.y;
-  int x = blockIdx.x * (blockDim.x - offsetY) + threadIdx.x;
+  int y = blockIdx.y * (blockDim.y - overlapX) + threadIdx.y;
+  int x = blockIdx.x * (blockDim.x - overlapY) + threadIdx.x;
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 

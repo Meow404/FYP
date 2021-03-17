@@ -69,7 +69,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
     
     float *result;
     float totalTime = 0.0;
-    printf("Kernel Dimension : %dx%d\n", kernels[i]->dimension, kernels[i]->dimension);
+    printf("\n\n\nKernel Dimension : %dx%d\n", kernels[i]->dimension, kernels[i]->dimension);
 
     for (int j = 0; j < ITERATIONS; j++)
     {
