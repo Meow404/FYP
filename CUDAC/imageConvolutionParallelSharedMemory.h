@@ -33,8 +33,8 @@ float *applyKernelToImageParallelSharedMemory(float *image, int imageWidth, int 
   cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
   cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
-  int overlapX = (kernel.dimension + 1) / 2;
-  int overlapY = (kernel.dimension + 1) / 2;
+  int overlapX = (kernel.dimension - 1);
+  int overlapY = (kernel.dimension - 1);
 
   int numHorBlocks = (imageWidth) / (blockWidth - overlapX);
   int numVerBlocks = (imageHeight) / (blockWidth - overlapY );
@@ -75,8 +75,8 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   int offsetX = (*d_kernelDimensionX - 1) / 2;
   int offsetY = (*d_kernelDimensionY - 1) / 2;
 
-  int overlapX = (*d_kernelDimensionX + 1) / 2;
-  int overlapY = (*d_kernelDimensionY + 1) / 2;
+  int overlapX = (*d_kernelDimensionX - 1);
+  int overlapY = (*d_kernelDimensionY - 1);
 
   int y = blockIdx.y * (blockDim.y - overlapX) + threadIdx.y;
   int x = blockIdx.x * (blockDim.x - overlapY) + threadIdx.x;
