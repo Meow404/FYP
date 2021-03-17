@@ -43,15 +43,22 @@ kernel** loadAllKernels(FILE* fp, int numOfKernels){
         // kernels[i] = &kl;
     }
 
+    
     printf("\nNum of kernels : %d", numOfKernels);
     for (int k = 0; k < numOfKernels; k++)
     {
+        float sum = 0.0;
+        for (int i = 0; i < kernels[k]->dimension; i++)
+            for (int j = 0; j < kernels[k]->dimension; j++)
+                sum += kernels[k]->matrix[i*kernels[k]->dimension +j];
+
         printf("\n%dx%d", kernels[k]->dimension, kernels[k]->dimension);
         for (int i = 0; i < kernels[k]->dimension; i++)
         {
             printf("\n");
             for (int j = 0; j < kernels[k]->dimension; j++)
             {
+                kernels[k]->matrix[i*kernels[k]->dimension +j] /= sum;
                 printf("%3.2f ", kernels[k]->matrix[i*kernels[k]->dimension + j]);
             }
         }
