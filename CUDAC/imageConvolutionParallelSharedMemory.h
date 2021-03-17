@@ -93,7 +93,7 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
 
   __syncthreads();
 
-  if ((threadIdx.x >= offsetX || threadIdx.x < blockDim.x - offsetX + 1) && (threadIdx.y > offsetY || threadIdx.y < blockDim.y - offsetY + 1))
+  if (threadIdx.x < blockDim.x - offsetX && threadIdx.y < blockDim.y - offsetY)
   {
 
     // if ((blockIdx.x == 0 || blockIdx.x == 0) && (blockIdx.y == 1 || blockIdx.y == 1))

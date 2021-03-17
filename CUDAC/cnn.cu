@@ -127,15 +127,15 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
     }
     printf("Time Serial Average Implementation: %f ms\n", totalTime / ITERATIONS);
 
-    // for (int j = 0; j < height; j++)
-    // {
-    //   printf("[%3d] : ", j);
-    //   for (int i = 0; i < width; i++)
-    //   {
-    //     printf(" |%5.2f|", result[j * width + i]);
-    //   }
-    //   printf("\n");
-    // }
+    for (int j = 0; j < height; j++)
+    {
+      printf("[%3d] : ", j);
+      for (int i = 0; i < width; i++)
+      {
+        printf(" |%5.2f|", result[j * width + i]);
+      }
+      printf("\n");
+    }
     strcpy(outputFilename, imagePath);
     strcpy(outputFilename + strlen(imagePath) - 4, file_name);
     printf("Saving to %s", outputFilename);
