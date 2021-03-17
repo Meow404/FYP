@@ -15,7 +15,7 @@
 const char *imageFilename = "res//images//lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
 #define ITERATIONS 20
-#define BLOCK_WIDTH 13
+#define BLOCK_WIDTH 16
 
 void imageConvolutionParallel(const char *imageFilename, char **argv, int option)
 {
@@ -73,6 +73,7 @@ void imageConvolutionParallel(const char *imageFilename, char **argv, int option
 
     for (int j = 0; j < ITERATIONS; j++)
     {
+      cudaDeviceReset();
       cudaEvent_t start, stop;
       cudaEventCreate(&start);
       cudaEventCreate(&stop);

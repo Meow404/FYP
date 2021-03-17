@@ -97,7 +97,7 @@ __global__ void applyKernelPerPixelParallelSharedMemory(int *d_kernelDimensionX,
   //   printf("")
   // }
 
-  if ((threadIdx.x >= offsetX && threadIdx.x < blockDim.x - offsetX && threadIdx.y >= offsetY && threadIdx.y < blockDim.y - offsetY) || (blockIdx.x == 0 && threadIdx.y < offsetY) || (blockIdx.y == 0 && threadIdx.x < offsetX))
+  if ((blockIdx.x == 0 || (blockIdx.x != 0 && threadIdx.x >= offsetX)) && threadIdx.x < blockDim.x - offsetX && (blockIdx.y == 0 || (blockIdx.y != 0 && threadIdx.y >= offsetY)) && threadIdx.y < blockDim.y - offsetY) // || (blockIdx.x == 0 && threadIdx.y < offsetY) || (blockIdx.y == 0 && threadIdx.x < offsetX))
   {
 
     if ((y < (*d_imageHeight)) && (x < (*d_imageWidth)))
