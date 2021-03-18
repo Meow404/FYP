@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 
   printf("Kernels loaded\n");
 
-  char **image_files = { "res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm" };
+  char image_files[5][35] = { "res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm" };
 
   if (option < 8)
     imageConvolutionParallel(image_files[2], argv, option);
