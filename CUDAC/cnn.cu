@@ -180,17 +180,6 @@ int main(int argc, char **argv)
   char buf[512];
   scanf("%d", &option);
 
-  FILE *fp = fopen("kernels.txt", "r");
-  if (fp == NULL)
-  {
-    perror("Error in opening file");
-    exit(EXIT_FAILURE);
-  }
-
-  int numOfKernels;
-  fgets(buf, sizeof(buf), fp);
-  sscanf(buf, "%d", &numOfKernels);
-
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
   printf("Kernels loaded\n");
@@ -199,11 +188,24 @@ int main(int argc, char **argv)
     imageConvolutionParallel(imageFilename, argv, option);
   else if (option == 8)
   {
+
+    FILE *fp = fopen("kernels.txt", "r");
+    if (fp == NULL)
+    {
+      perror("Error in opening file");
+      exit(EXIT_FAILURE);
+    }
+  
+    int numOfKernels;
+    fgets(buf, sizeof(buf), fp);
+    sscanf(buf, "%d", &numOfKernels);
+    kernel **kernels = loadAllKernels(fp, numOfKernels);
+
     float **results = (float **)malloc(sizeof(float *) * 7);
     for (int i = 1; i < 8; i++)
       results[i-1] = imageConvolutionParallel(imageFilename, argv, i, false);
 
-    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
+    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |");
     for (int i = 0; i < numOfKernels; i++)
     {
       printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
