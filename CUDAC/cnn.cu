@@ -186,7 +186,7 @@ int main(int argc, char **argv)
   {
     float **results = (float **)malloc(sizeof(float *) * 7);
     for (int i = 1; i < 8; i++)
-      results[i] = imageConvolutionParallel(imageFilename, argv, option, kernels, numOfKernels, false);
+      results[i] = imageConvolutionParallel(imageFilename, argv, i, kernels, numOfKernels, false);
 
     printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |");
     for (int i = 0; i < numOfKernels; i++)
