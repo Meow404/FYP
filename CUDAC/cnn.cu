@@ -17,7 +17,7 @@ const char *imageFilename = "res//images//lena_bw.pgm";
 #define ITERATIONS 20
 #define BLOCK_WIDTH 16
 
-float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, kernel **kernels, int numOfKernels, bool print_save = true)
+float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
 {
   // load image from disk
   float *hData = NULL;
@@ -37,6 +37,26 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
     printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
 
   results = (float *)malloc(numOfKernels * sizeof(float));
+
+  FILE *fp = fopen("kernels.txt", "r");
+  if (fp == NULL)
+  {
+    perror("Error in opening file");
+    exit(EXIT_FAILURE);
+  }
+
+  int numOfKernels;
+  fgets(buf, sizeof(buf), fp);
+  sscanf(buf, "%d", &numOfKernels);
+
+  printf("%d kernel to be loaded\n", numOfKernels);
+
+  kernel **kernels = loadAllKernels(fp, numOfKernels);
+  printKernels(kernels, numOfKernels);
+
+  // kernelHandler kh = kernelHandler("../kernels.txt");
+
+  printf("Kernels loaded\n");
 
   //Get Kernels
   // FILE *fp = fopen("kernels.txt", "r");
@@ -181,12 +201,12 @@ int main(int argc, char **argv)
   printf("Kernels loaded\n");
 
   if (option < 8)
-    imageConvolutionParallel(imageFilename, argv, option, kernels, numOfKernels);
+    imageConvolutionParallel(imageFilename, argv, option);
   else if (option == 8)
   {
     float **results = (float **)malloc(sizeof(float *) * 7);
     for (int i = 1; i < 8; i++)
-      results[i] = imageConvolutionParallel(imageFilename, argv, i, kernels, numOfKernels, false);
+      results[i] = imageConvolutionParallel(imageFilename, argv, i, false);
 
     printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |");
     for (int i = 0; i < numOfKernels; i++)
