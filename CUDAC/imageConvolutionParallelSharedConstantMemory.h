@@ -34,8 +34,8 @@ float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWid
   cudaMemcpyToSymbol(kernelDimensionXConstant, &kernel.dimension, sizeInt);
   cudaMemcpyToSymbol(kernelDimensionYConstant, &kernel.dimension, sizeInt);
 
-  int overlapX = (kernel.dimension + 1) / 2;
-  int overlapY = (kernel.dimension + 1) / 2;
+  int overlapX = (kernel.dimension - 1);
+  int overlapY = (kernel.dimension - 1);
 
   int numHorBlocks = (imageWidth) / (blockWidth - overlapX);
   int numVerBlocks = (imageHeight) / (blockWidth - overlapY);
@@ -47,7 +47,7 @@ float *applyKernelToImageParallelSharedConstantMemory(float *image, int imageWid
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
   dim3 dimBlock(blockWidth, blockWidth, 1);
-  applyKernelPerPixelParallelSharedConstantMemory<<<dimGrid, dimBlock>>>(d_image, d_sumArray);
+  applyKernelPerPixelParallelSharedConstantMemory<<<dimGrid, dimBlock, blockWidth*blockWidth*sizeFloat>>>(d_image, d_sumArray);
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
   // CUDA free varibles
@@ -62,8 +62,8 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int offsetX = (kernelDimensionXConstant - 1) / 2;
   int offsetY = (kernelDimensionYConstant - 1) / 2;
 
-  int overlapX = (kernelDimensionXConstant + 1) / 2;
-  int overlapY = (kernelDimensionYConstant + 1) / 2;
+  int overlapX = (kernelDimensionXConstant + 1);
+  int overlapY = (kernelDimensionYConstant + 1);
 
   int y = blockIdx.y * (blockDim.y - overlapY + 1) + threadIdx.y;
   int x = blockIdx.x * (blockDim.x - overlapX + 1) + threadIdx.x;
@@ -73,15 +73,15 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  __shared__ float local_imageSection[28][28];
+  extern __shared__ float local_imageSection[];
   // int imageIndex = y * (imageWidthConstant) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
-  local_imageSection[row][col] = d_image[y * (imageWidthConstant) + x];
+  local_imageSection[row*(blockDim.x) + col] = d_image[y * (imageWidthConstant) + x];
 
   __syncthreads();
 
   //Need to fill in if statement ******
-  if ((threadIdx.x >= offsetX || threadIdx.x < blockDim.x - offsetX + 1) && (threadIdx.y > offsetY || threadIdx.y < blockDim.y - offsetY + 1))
+  if ((blockIdx.x == 0 || (blockIdx.x != 0 && threadIdx.x >= offsetX)) && threadIdx.x < blockDim.x - offsetX && (blockIdx.y == 0 || (blockIdx.y != 0 && threadIdx.y >= offsetY)) && threadIdx.y < blockDim.y - offsetY) 
   {
 
     // if ((blockIdx.x == 0 || blockIdx.x == 0) && (blockIdx.y == 1 || blockIdx.y == 1))
@@ -109,7 +109,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemory(float *d_image, 
           float value;
 
           float k = kernelConstant[i + j * (kernelDimensionYConstant)];
-          float imageElement = local_imageSection[row + j - offsetY][col + i - offsetX];
+          float imageElement = local_imageSection[(row + j - offsetY)*(blockDim.x) + col + i - offsetX];
 
           value = k * imageElement;
           sum = sum + value;

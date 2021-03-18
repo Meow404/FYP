@@ -17,7 +17,7 @@ const char *imageFilename = "res//images//1024_lena_bw.pgm";
 #define ITERATIONS 20
 #define BLOCK_WIDTH 16
 
-float* imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
+float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
 {
   // load image from disk
   float *hData = NULL;
@@ -50,7 +50,7 @@ float* imageConvolutionParallel(const char *imageFilename, char **argv, int opti
   printf("%d kernel to be loaded\n", numOfKernels);
 
   kernel **kernels = loadAllKernels(fp, numOfKernels);
-  printKernels(kernels, numOfKernels);
+  // printKernels(kernels, numOfKernels);
 
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
@@ -184,36 +184,45 @@ int main(int argc, char **argv)
 
   printf("Kernels loaded\n");
 
+  char **image_files = { "res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm" };
+
   if (option < 8)
-    imageConvolutionParallel(imageFilename, argv, option);
+    imageConvolutionParallel(image_files[2], argv, option);
   else if (option == 8)
   {
 
-    FILE *fp = fopen("kernels.txt", "r");
-    if (fp == NULL)
+    for (int k = 0; k < 5; k++)
     {
-      perror("Error in opening file");
-      exit(EXIT_FAILURE);
-    }
-  
-    int numOfKernels;
-    fgets(buf, sizeof(buf), fp);
-    sscanf(buf, "%d", &numOfKernels);
-    kernel **kernels = loadAllKernels(fp, numOfKernels);
 
-    float **results = (float **)malloc(sizeof(float *) * 7);
-    for (int i = 1; i < 8; i++)
-      results[i-1] = imageConvolutionParallel(imageFilename, argv, i, false);
-
-    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
-    for (int i = 0; i < numOfKernels; i++)
-    {
-      printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
-      for (int j = 1; j < 8; j++)
+      FILE *fp = fopen("kernels.txt", "r");
+      if (fp == NULL)
       {
-        printf("%8.3f|", results[j-1][i]);
+        perror("Error in opening file");
+        exit(EXIT_FAILURE);
       }
-      printf("\n");
+
+      int numOfKernels;
+      fgets(buf, sizeof(buf), fp);
+      sscanf(buf, "%d", &numOfKernels);
+      kernel **kernels = loadAllKernels(fp, numOfKernels);
+
+      float **results = (float **)malloc(sizeof(float *) * 7);
+      for (int i = 1; i < 8; i++)
+      {
+        results[i - 1] = imageConvolutionParallel(image_files[k], argv, i, false);
+        printf("Image %d : Type %d DONE", k, i);
+      }
+      printf("Image : %s", image_files[k]);
+      printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
+      for (int i = 0; i < numOfKernels; i++)
+      {
+        printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
+        for (int j = 1; j < 8; j++)
+        {
+          printf("%8.3f|", results[j - 1][i]);
+        }
+        printf("\n");
+      }
     }
   }
   else
