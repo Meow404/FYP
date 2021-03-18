@@ -17,7 +17,7 @@ const char *imageFilename = "res//images//lena_bw.pgm";
 #define ITERATIONS 20
 #define BLOCK_WIDTH 16
 
-float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
+float* imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
 {
   // load image from disk
   float *hData = NULL;
@@ -35,8 +35,6 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
   sdkLoadPGM(imagePath, &hData, &width, &height);
   if (print_save)
     printf("Loaded '%s', %d x %d pixels\n", imageFilename, width, height);
-
-  results = (float *)malloc(numOfKernels * sizeof(float));
 
   FILE *fp = fopen("kernels.txt", "r");
   if (fp == NULL)
@@ -57,6 +55,8 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
   printf("Kernels loaded\n");
+
+  results = (float *)malloc(numOfKernels * sizeof(float));
 
   //Get Kernels
   // FILE *fp = fopen("kernels.txt", "r");
@@ -79,7 +79,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
 
     for (int j = 0; j < ITERATIONS; j++)
     {
-      cudaDeviceReset();
+      //cudaDeviceReset();
       cudaEvent_t start, stop;
       cudaEventCreate(&start);
       cudaEventCreate(&stop);
@@ -191,11 +191,6 @@ int main(int argc, char **argv)
   fgets(buf, sizeof(buf), fp);
   sscanf(buf, "%d", &numOfKernels);
 
-  printf("%d kernel to be loaded\n", numOfKernels);
-
-  kernel **kernels = loadAllKernels(fp, numOfKernels);
-  printKernels(kernels, numOfKernels);
-
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
   printf("Kernels loaded\n");
@@ -206,9 +201,9 @@ int main(int argc, char **argv)
   {
     float **results = (float **)malloc(sizeof(float *) * 7);
     for (int i = 1; i < 8; i++)
-      results[i] = imageConvolutionParallel(imageFilename, argv, i, false);
+      results[i-1] = imageConvolutionParallel(imageFilename, argv, i, false);
 
-    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |");
+    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
     for (int i = 0; i < numOfKernels; i++)
     {
       printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
