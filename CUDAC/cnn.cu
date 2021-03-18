@@ -12,7 +12,7 @@
 #include "imageConvolutionTextureMemory.h"
 #include "imageConvolution2DTextureMemory.h"
 
-const char *imageFilename = "res//images//lena_bw.pgm";
+const char *imageFilename = "res//images//1024_lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
 #define ITERATIONS 20
 #define BLOCK_WIDTH 16
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
     for (int i = 1; i < 8; i++)
       results[i-1] = imageConvolutionParallel(imageFilename, argv, i, false);
 
-    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |");
+    printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
     for (int i = 0; i < numOfKernels; i++)
     {
       printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
