@@ -128,7 +128,6 @@ void printKernels(kernel **kernels, int numOfKernels)
             printf("\n");
             for (int j = 0; j < kernels[k]->dimension; j++)
             {
-                kernels[k]->matrix[i * kernels[k]->dimension + j] /= sum;
                 printf("%3.2f ", kernels[k]->matrix[i * kernels[k]->dimension + j]);
             }
         }
