@@ -160,6 +160,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       strcpy(outputFilename + strlen(imagePath) - 4, file_name);
       printf("Saving to %s", outputFilename);
       sdkSavePGM(outputFilename, result, width, height);
+      free(result);
     }
   }
   return results;
