@@ -30,12 +30,12 @@ int opencvConvolve(char* file_path)
         return -1;
     }
 
-    cout << "image = " << endl
-         << " " << image << endl
-         << endl;
+    // cout << "image = " << endl
+    //      << " " << image << endl
+    //      << endl;
 
     cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
-    kh.printKernel();
+    // kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
         for (int j = 0; j < ITERATIONS; j++)
@@ -54,7 +54,8 @@ int opencvConvolve(char* file_path)
         sprintf(file_name, "_%dx%d_opencv_serial_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
         strcpy(output_file, file_path);
         strcpy(output_file + strlen(file_path) - 4, file_name);
-        cout << "Writing to : " << output_file;
+        cout << "\nWriting to : " << output_file;
+        cout << result;
         imwrite(output_file, result);
     }
     //  image.copyTo(result);
