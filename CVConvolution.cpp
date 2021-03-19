@@ -105,6 +105,7 @@ int opencvCUDAConvolve(const char *file_path)
         auto t_start = chrono::steady_clock::now();
         for (int j = 0; j < ITERATIONS; j++)
         {
+            cv::cuda::resetDevice ()
             auto start = chrono::steady_clock::now();
             gpu_image.upload(image);
             gpu_image.convertTo(gpu_image, CV_32FC1);
