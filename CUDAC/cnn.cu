@@ -140,6 +140,9 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       if (print_save)
         printf("Time Naive Parallel Implementation: %f \n", milliseconds);
       totalTime += milliseconds;
+
+      if (j != ITERATIONS-1)
+        free(result)
     }
     if (print_save)
       printf("Time Serial Average Implementation: %f ms\n", totalTime / ITERATIONS);
