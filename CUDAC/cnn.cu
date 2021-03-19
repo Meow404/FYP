@@ -78,7 +78,8 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
     if (print_save)
       printf("\n\n\nKernel Dimension : %dx%d\n", kernels[i]->dimension, kernels[i]->dimension);
 
-    for (int j = 0; j < ITERATIONS; j++)
+    int j = 0;
+    for (; j < ITERATIONS; j++)
     {
       cudaDeviceReset();
       cudaEvent_t start, stop;
