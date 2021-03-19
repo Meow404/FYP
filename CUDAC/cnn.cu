@@ -16,7 +16,7 @@ const char *imageFilename = "res//images//1024_lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
 #define ITERATIONS 100
 #define BLOCK_WIDTH 16
-#define FILE_INDEX 1
+#define FILE_INDEX 2
 
 float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
 {
@@ -142,7 +142,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       totalTime += milliseconds;
 
       if (j != ITERATIONS-1)
-        free(result)
+        free(result);
     }
     if (print_save)
       printf("Time Serial Average Implementation: %f ms\n", totalTime / ITERATIONS);
@@ -194,12 +194,12 @@ int main(int argc, char **argv)
   char image_files[5][35] = { "res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm" };
 
   if (option < 8)
-    imageConvolutionParallel(image_files[1], argv, option);
+    imageConvolutionParallel(image_files[FILE_INDEX], argv, option);
   else if (option == 8)
   {
 
-//    for (int k = 0; k < 5; k++)
-//    {
+   for (int k = 0; k < 5; k++)
+   {
 
       FILE *fp = fopen("kernels.txt", "r");
       if (fp == NULL)
@@ -216,10 +216,10 @@ int main(int argc, char **argv)
       float **results = (float **)malloc(sizeof(float *) * 7);
       for (int i = 2; i < 8; i++)
       {
-        results[i - 2] = imageConvolutionParallel(image_files[FILE_INDEX], argv, i, false);
-        printf("Image %d : Type %d DONE\n", FILE_INDEX, i);
+        results[i - 2] = imageConvolutionParallel(image_files[k], argv, i, false);
+        printf("Image %d : Type %d DONE\n", k, i);
       }
-      printf("Image : %s\n", image_files[FILE_INDEX]);
+      printf("Image : %s\n", image_files[k]);
       printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
       for (int i = 0; i < numOfKernels; i++)
       {
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
         printf("\n");
       }
       printf("=================================\n\n\n");
-//    }
+   }
   }
   else
     printf("\n\nInvalid Input !!!");
