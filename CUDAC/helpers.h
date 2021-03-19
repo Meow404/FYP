@@ -27,7 +27,7 @@ kernel **loadAllKernels(FILE *fp, int numOfKernels)
         int kernel_dim;
         fgets(buf, sizeof(buf), fp);
         sscanf(buf, "%d", &kernel_dim);
-        printf("Loading kernel with kernel dimesnion %dx%d\n", kernel_dim, kernel_dim);
+        //printf("Loading kernel with kernel dimesnion %dx%d\n", kernel_dim, kernel_dim);
 
         kernels[i] = (kernel *)malloc(sizeof(kernel));
         kernels[i]->dimension = kernel_dim;
@@ -44,7 +44,7 @@ kernel **loadAllKernels(FILE *fp, int numOfKernels)
         // kernels[i] = &kl;
     }
 
-    printf("\nNum of kernels : %d", numOfKernels);
+    //printf("\nNum of kernels : %d", numOfKernels);
     for (int k = 0; k < numOfKernels; k++)
     {
         float sum = 0.0;

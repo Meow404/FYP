@@ -214,9 +214,9 @@ int main(int argc, char **argv)
       kernel **kernels = loadAllKernels(fp, numOfKernels);
 
       float **results = (float **)malloc(sizeof(float *) * 7);
-      for (int i = 2; i < 8; i++)
+      for (int i = 1; i < 8; i++)
       {
-        results[i - 2] = imageConvolutionParallel(image_files[k], argv, i, false);
+        results[i - 1] = imageConvolutionParallel(image_files[k], argv, i, false);
         printf("Image %d : Type %d DONE\n", k, i);
       }
       printf("Image : %s\n", image_files[k]);
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
       for (int i = 0; i < numOfKernels; i++)
       {
         printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
-        for (int j = 2; j < 8; j++)
+        for (int j = 1; j < 8; j++)
         {
           printf("%8.3f|", results[j - 2][i]);
         }
