@@ -12,7 +12,7 @@
 using namespace cv;
 using namespace std;
 
-int opencvConvolve(char* file_path)
+int opencvConvolve(const char *file_path)
 {
     // Read the image file
     cv::Mat image = imread(file_path);
@@ -44,7 +44,7 @@ int opencvConvolve(char* file_path)
         {
             int dim = kh.getKernel(i).dimension;
             cv::Mat k = kh.returnMatrix(i);
-            
+
             cv::normalize(k, k, 1.0, 0.0, NORM_L1);
 
             // Ptr<cuda::Convolution> convolver = cuda::createConvolution(k.size);
@@ -52,22 +52,21 @@ int opencvConvolve(char* file_path)
             cv::filter2D(temp, result, -1, k, Point(-1, -1), 5.0, BORDER_REPLICATE);
         }
         auto end = chrono::steady_clock::now();
-        cout << "\nElapsed time in milliseconds : "
-        << chrono::duration_cast<chrono::milliseconds>(end - start).count()
-        << " ms" << endl;
+        cout << "\nmElapsed time in milliseconds : "
+             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
+             << " ms" << endl;
 
         char output_file[50], file_name[50];
         sprintf(file_name, "_%dx%d_opencv_serial_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
         strcpy(output_file, file_path);
         strcpy(output_file + strlen(file_path) - 4, file_name);
         cout << "\nWriting to : " << output_file;
-        cout << result;
         imwrite(output_file, result);
     }
     //  image.copyTo(result);
 }
 
-int opencvCUDAConvolve()
+int opencvCUDAConvolve(const char *file_path)
 {
     // Read the image file
     cv::Mat image = imread("res/images/lena_bw.pgm");
@@ -87,9 +86,9 @@ int opencvCUDAConvolve()
         return -1;
     }
 
-    cout << "image = " << endl
-         << " " << image << endl
-         << endl;
+    // cout << "image = " << endl
+    //      << " " << image << endl
+    //      << endl;
 
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
     gpu_image.upload(image);
@@ -98,28 +97,44 @@ int opencvCUDAConvolve()
     kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
-        int dim = kh.getKernel(i).dimension;
-        cv::Mat k = kh.returnMatrix(i);
-        cout << "kernel = " << k << endl;
-        cv::normalize(k, k, 1.0, 0.0, NORM_L1);
-        cout << "kernel = " << k << endl;
-        gpu_kernel.upload(k);
-        gpu_kernel.convertTo(gpu_kernel, CV_32FC1);
-        cv::normalize(k, k, 1.0, 0.0, NORM_L1);
-        cout << "kernel = " << k;
+        auto start = chrono::steady_clock::now();
+        for (int j = 0; j < ITERATIONS; j++)
+        {
+            gpu_image.upload(image);
+            gpu_image.convertTo(gpu_image, CV_32FC1);
 
-        Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(dim, dim));
-        convolver->convolve(gpu_image, gpu_kernel, gpu_result);
-        // cv::filter2D(result, result, -1, kernel, Point(-1, -1), 5.0, BORDER_REPLICATE);
-        gpu_result.download(result);
-        cout << "result = " << endl
-             << " " << result << endl
-             << endl;
+            int dim = kh.getKernel(i).dimension;
+            cv::Mat k = kh.returnMatrix(i);
+            // cout << "kernel = " << k << endl;
 
-        char filename[50];
-        sprintf(filename, "res/images/result_CUDA_convolve_%d_kernel.jpg", dim);
-        cout << "Writing to : " << filename;
-        imwrite(filename, result);
+            cv::normalize(k, k, 1.0, 0.0, NORM_L1);
+            // cout << "kernel = " << k << endl;
+
+            gpu_kernel.upload(k);
+            gpu_kernel.convertTo(gpu_kernel, CV_32FC1);
+
+            // cv::normalize(k, k, 1.0, 0.0, NORM_L1);
+            // cout << "kernel = " << k;
+
+            Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(dim, dim));
+            convolver->convolve(gpu_image, gpu_kernel, gpu_result);
+            // cv::filter2D(result, result, -1, kernel, Point(-1, -1), 5.0, BORDER_REPLICATE);
+            gpu_result.download(result);
+            // cout << "result = " << endl
+            //      << " " << result << endl
+            //      << endl;
+        }
+        auto end = chrono::steady_clock::now();
+        cout << "\nmElapsed time in milliseconds : "
+             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
+             << " ms" << endl;
+
+        char output_file[50], file_name[50];
+        sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
+        strcpy(output_file, file_path);
+        strcpy(output_file + strlen(file_path) - 4, file_name);
+        cout << "\nWriting to : " << output_file;
+        imwrite(output_file, result);
     }
     //  image.copyTo(result);
 }
