@@ -254,7 +254,7 @@ int main(int argc, char **argv)
         printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
         for (int j = 9; j < 11; j++)
         {
-          printf("%8.3f|", results[j - 0][i]);
+          printf("%8.3f|", results[j - 9][i]);
         }
         printf("\n");
       }
