@@ -90,13 +90,12 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   {
     for (int i = y - offsetY; i <= y + offsetY; i++)
     {
-      if (i < 0 || i >= *d_imageHeight)
-        continue;
       for (int j = x - offsetX; j <= x + offsetX; j++)
       {
-        if (j < 0 || j >= *d_imageHeight)
-          continue;
-        local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col + j)] = d_image[i * (*d_imageWidth) + j];
+        if (j < 0 || j >= *d_imageHeight || i < 0 || i >= *d_imageHeight)
+          local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col + j)] = 0.0;
+        else
+          local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col + j)] = d_image[i * (*d_imageWidth) + j];
       }
     }
   }
@@ -106,8 +105,9 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
     for (int j = x - offsetX; j <= x + offsetX; j++)
     {
       if (j < 0 || j >= *d_imageHeight)
-        continue;
-      local_imageSection[(offsetY + row) * (blockDim.x) + (offsetX + col + j)] = d_image[y * (*d_imageWidth) + j];
+        local_imageSection[(offsetY + row) * (blockDim.x) + (offsetX + col + j)] = 0.0;
+      else
+        local_imageSection[(offsetY + row) * (blockDim.x) + (offsetX + col + j)] = d_image[y * (*d_imageWidth) + j];
     }
   }
   else if ((col > offsetX || col < blockDim.x - offsetX) && (row == 0 || row == blockDim.y - 1))
@@ -116,8 +116,9 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
     for (int i = y - offsetY; i <= y + offsetY; i++)
     {
       if (i < 0 || i >= *d_imageHeight)
-        continue;
-      local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col)] = d_image[i * (*d_imageWidth) + x];
+        local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col)] = 0.0;
+      else
+        local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col)] = d_image[i * (*d_imageWidth) + x];
     }
   }
   else if ((col > offsetX || col < blockDim.x - offsetX) && (row > offsetY || row < blockDim.y - offsetY))
