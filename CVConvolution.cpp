@@ -76,7 +76,7 @@ int opencvCUDAConvolve(const char *file_path)
     // Read the image file
     cv::Mat image = imread("res/images/lena_bw.pgm");
     cv::Mat result;
-    cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
+
     const int ratio = 3;
     const int lowThreshold = 20;
     const int kernel_size = 3;
@@ -96,8 +96,8 @@ int opencvCUDAConvolve(const char *file_path)
     //      << endl;
 
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
-    gpu_image.upload(image);
-    gpu_image.convertTo(gpu_image, CV_32FC1);
+    // gpu_image.upload(image);
+    // gpu_image.convertTo(gpu_image, CV_32FC1);
 
     kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
@@ -106,6 +106,7 @@ int opencvCUDAConvolve(const char *file_path)
         for (int j = 0; j < ITERATIONS; j++)
         {
             cv::cuda::resetDevice();
+            cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
             auto start = chrono::steady_clock::now();
             gpu_image.upload(image);
             gpu_image.convertTo(gpu_image, CV_32FC1);
