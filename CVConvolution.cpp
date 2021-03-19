@@ -58,7 +58,7 @@ int opencvConvolve(const char *file_path)
         }
         auto t_end = chrono::steady_clock::now();
         cout << "\nAverage Elapsed time in milliseconds : "
-             << chrono::duration_cast<chrono::milliseconds>(t_end - t_start).count() / ITERATIONS
+             << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS*1000.0)
              << " micro s" << endl;
 
         char output_file[50], file_name[50];
@@ -141,7 +141,7 @@ int opencvCUDAConvolve(const char *file_path)
         // auto t_end = chrono::steady_clock::now();
         auto t_end = chrono::steady_clock::now();
         cout << "\nAverage Elapsed time in milliseconds : "
-             << chrono::duration_cast<chrono::milliseconds>(t_end - t_start).count() / ITERATIONS
+             << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS*1000.0)
              << " micro s" << endl;
 
         char output_file[50], file_name[50];
