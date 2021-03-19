@@ -1,22 +1,36 @@
 #ifndef IMAGECONVOLUTIONPARALLEL
 #define IMAGECONVOLUTIONPARALLEL
 
-
-float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth);
+float *applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel *kernel, char *imagePath, int blockWidth);
 __global__ void applyKernelPerPixelParallel(int *kernelX, int *kernelY, int *imageWidth, int *imageHeight, float *kernel, float *image, float *sumArray);
 
-float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel* kernel, char *imagePath, int blockWidth)
-{     
-  
+float *applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHeight, kernel *kernel, char *imagePath, int blockWidth)
+{
+  /*
+  This function makes use of GPU threading capability by assigign each thread a pixel to apply the convolutional kernel on
+
+  float *image : 1D float matrix containing image values
+  int imageWidth: Image width 
+  int imageHeight: Image Height
+  kernel* kernel: Kernel to be applied on image
+  char *imagePath: Path to image being convoluted
+  int blockWidth: Width and height of a single block 
+
+  return : Resultant image as a 1D float matrix
+  */
+
+  // Variables that will point to values on the device
   int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
   float *d_kernel, *d_image, *d_sumArray;
 
   int sizeInt = sizeof(int);
   int sizeFloat = sizeof(float);
   int sizeImageArray = imageWidth * imageHeight * sizeFloat;
+
+  // Resultant convoluted image as a 1D float matrix
   float *sumArray = (float *)malloc(sizeImageArray);
 
-  // CUDA create varibles
+  // CUDA create variables
   cudaMalloc((void **)&d_kernelDimensionX, sizeInt);
   cudaMalloc((void **)&d_kernelDimensionY, sizeInt);
   cudaMalloc((void **)&d_imageWidth, sizeInt);
@@ -47,9 +61,7 @@ float* applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
   applyKernelPerPixelParallel<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
-  //printImage(sumArray,imageWidth,imageHeight,"newImageP.txt");
-
-  // CUDA free varibles
+  // CUDA free variables
   cudaFree(d_kernelDimensionX);
   cudaFree(d_kernelDimensionY);
   cudaFree(d_imageWidth);

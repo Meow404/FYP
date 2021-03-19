@@ -141,13 +141,16 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
         printf("Time Naive Parallel Implementation: %f \n", milliseconds);
       totalTime += milliseconds;
 
+      if (totalTime>1000)
+        break;
+
       if (j != ITERATIONS-1)
         free(result);
     }
     if (print_save)
-      printf("Time Serial Average Implementation: %f ms\n", totalTime / ITERATIONS);
+      printf("Time Serial Average Implementation: %f ms\n", totalTime / j);
 
-    results[i] = totalTime / ITERATIONS;
+    results[i] = totalTime / j;
     if (print_save)
     {
       for (int j = 0; j < height; j++)
@@ -226,7 +229,7 @@ int main(int argc, char **argv)
         printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
         for (int j = 1; j < 8; j++)
         {
-          printf("%8.3f|", results[j - 2][i]);
+          printf("%8.3f|", results[j - 1][i]);
         }
         printf("\n");
       }
