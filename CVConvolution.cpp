@@ -75,7 +75,7 @@ int opencvCUDAConvolve(const char *file_path)
 {
     // Read the image file
     cv::Mat image = imread(file_path);
-    cv::Mat result;
+    cv::Mat result, temp;
 
     const int ratio = 3;
     const int lowThreshold = 20;
@@ -103,7 +103,7 @@ int opencvCUDAConvolve(const char *file_path)
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
         int offset = (kh.getKernel(i).dimension-1)/2;
-        copyMakeBorder(image, image, offset, offset, offset, offset, BORDER_CONSTANT,Scalar(0));
+        copyMakeBorder(image, temp, offset, offset, offset, offset, BORDER_CONSTANT,Scalar(0));
         auto t_start = chrono::steady_clock::now();
         for (int j = 0; j < ITERATIONS; j++)
         {
@@ -111,7 +111,7 @@ int opencvCUDAConvolve(const char *file_path)
             cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
             
             // auto start = chrono::steady_clock::now();
-            gpu_image.upload(image);
+            gpu_image.upload(temp);
             gpu_image.convertTo(gpu_image, CV_32FC1);
 
             int dim = kh.getKernel(i).dimension;
