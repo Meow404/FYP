@@ -102,11 +102,12 @@ int opencvCUDAConvolve(const char *file_path)
     kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
+        cv::cuda::resetDevice();
+        cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
         auto t_start = chrono::steady_clock::now();
         for (int j = 0; j < ITERATIONS; j++)
         {
-            cv::cuda::resetDevice();
-            cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
+            
             auto start = chrono::steady_clock::now();
             gpu_image.upload(image);
             gpu_image.convertTo(gpu_image, CV_32FC1);
@@ -134,12 +135,12 @@ int opencvCUDAConvolve(const char *file_path)
             auto end = chrono::steady_clock::now();
             cout << "\nElapsed time [" << j << "] in milliseconds : "
                  << chrono::duration_cast<chrono::milliseconds>(end - start).count()
-                 << " micro s";
+                 << " ms";
         }
         auto t_end = chrono::steady_clock::now();
         cout << "\nAverage Elapsed time in milliseconds : "
              << chrono::duration_cast<chrono::milliseconds>(t_end - t_start).count() / ITERATIONS
-             << " micro s" << endl;
+             << " ms" << endl;
 
         char output_file[50], file_name[50];
         sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
