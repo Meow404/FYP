@@ -53,12 +53,12 @@ int opencvConvolve(const char *file_path)
             cv::filter2D(temp, result, -1, k, Point(-1, -1), 5.0, BORDER_REPLICATE);
             auto end = chrono::steady_clock::now();
             cout << "\nElapsed time [" << j <<"] in microseconds : "
-             << chrono::duration_cast<chrono::microseconds>(end - start).count()
+             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
              << " micro s";
         }
         auto t_end = chrono::steady_clock::now();
             cout << "\nAverage Elapsed time in milliseconds : "
-             << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count()/ITERATIONS
+             << chrono::duration_cast<chrono::milliseconds>(t_end - t_start).count()/ITERATIONS
              << " micro s" << endl;
         
 
