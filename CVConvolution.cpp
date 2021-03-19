@@ -38,7 +38,6 @@ int opencvConvolve(char* file_path)
     kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
-        cout << "kernel = " << k << endl;
         for (int j = 0; j < ITERATIONS; j++)
         {
             int dim = kh.getKernel(i).dimension;
@@ -54,8 +53,8 @@ int opencvConvolve(char* file_path)
         char output_file[50], file_name[50];
         sprintf(file_name, "_%dx%d_opencv_serial_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
         strcpy(output_file, file_path);
-        strcpy(output_file + strlen(imagePath) - 4, file_name);
-        cout << "Writing to : " << filename;
+        strcpy(output_file + strlen(file_path) - 4, file_name);
+        cout << "Writing to : " << output_file;
         imwrite(output_file, result);
     }
     //  image.copyTo(result);

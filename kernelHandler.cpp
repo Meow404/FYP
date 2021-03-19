@@ -100,7 +100,7 @@ cv::Mat kernelHandler::returnMatrix(int index)
     {
         for (int j = 0; j <kernels[index].dimension; j++)
         {
-            mat.at<float>(i,j) = kernels[index].matrix[i*kernels[k].dimension + j];
+            mat.at<float>(i,j) = kernels[index].matrix[i*kernels[index].dimension + j];
         }
     }
     return mat;
