@@ -47,7 +47,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
   fgets(buf, sizeof(buf), fp);
   sscanf(buf, "%d", &numOfKernels);
 
-  printf("%d kernel to be loaded\n", numOfKernels);
+  // printf("%d kernel to be loaded\n", numOfKernels);
 
   kernel **kernels = loadAllKernels(fp, numOfKernels);
   // printKernels(kernels, numOfKernels);
@@ -223,6 +223,7 @@ int main(int argc, char **argv)
         }
         printf("\n");
       }
+      printf("=================================\n\n\n");
     }
   }
   else
