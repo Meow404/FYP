@@ -142,7 +142,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
         printf("Time Naive Parallel Implementation: %f \n", milliseconds);
       totalTime += milliseconds;
 
-      if (totalTime>1000)
+      if (totalTime>300000)
         break;
 
       if (j != ITERATIONS-1)
