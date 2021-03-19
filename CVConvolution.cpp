@@ -39,9 +39,10 @@ int opencvConvolve(const char *file_path)
     // kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
-        auto start = chrono::steady_clock::now();
+        auto t_start = chrono::steady_clock::now();
         for (int j = 0; j < ITERATIONS; j++)
         {
+            auto start = chrono::steady_clock::now();
             int dim = kh.getKernel(i).dimension;
             cv::Mat k = kh.returnMatrix(i);
 
@@ -50,11 +51,16 @@ int opencvConvolve(const char *file_path)
             // Ptr<cuda::Convolution> convolver = cuda::createConvolution(k.size);
             // convolver->convolve(result, k, result);
             cv::filter2D(temp, result, -1, k, Point(-1, -1), 5.0, BORDER_REPLICATE);
+            auto end = chrono::steady_clock::now();
+            cout << "\nElapsed time [" << j <<"] in microseconds : "
+             << chrono::duration_cast<chrono::microseconds>(end - start).count()
+             << " micro s";
         }
-        auto end = chrono::steady_clock::now();
-        cout << "\nmElapsed time in milliseconds : "
-             << chrono::duration_cast<chrono::milliseconds>(end - start).count()/ITERATIONS
-             << " ms" << endl;
+        auto t_end = chrono::steady_clock::now();
+            cout << "\nAverage Elapsed time in milliseconds : "
+             << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count()/ITERATIONS
+             << " micro s" << endl;
+        
 
         char output_file[50], file_name[50];
         sprintf(file_name, "_%dx%d_opencv_serial_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
