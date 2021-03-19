@@ -86,91 +86,48 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   extern __shared__ float local_imageSection[];
   // int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
-  if ((row == 0 || row == blockDim.y - 1) && (col == 0 || col == blockDim.x - 1))
-  {
-    for (int i = y - offsetY; i <= y + offsetY; i++)
-    {
-      for (int j = x - offsetX; j <= x + offsetX; j++)
-      {
-        if (j < 0 || j >= *d_imageHeight || i < 0 || i >= *d_imageHeight)
-          local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col + j)] = 0.0;
-        else
-          local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col + j)] = d_image[i * (*d_imageWidth) + j];
-      }
-    }
-  }
-  else if ((row > offsetY || row < blockDim.y - offsetY) && (col == 0 || col == blockDim.x - 1))
-  {
+  xt = x - offsetX;
+  yt = y - offsetY;
+// ....if ( xt < 0 || yt < 0 )
+// ........data[threadIdx.x][threadIdx.y] = 0;
+// ....else
+// ........data[threadIdx.x][threadIdx.y] = d_image[ gLoc - KERNEL_RADIUS - IMUL(dataW, KERNEL_RADIUS)];
 
-    for (int j = x - offsetX; j <= x + offsetX; j++)
-    {
-      if (j < 0 || j >= *d_imageHeight)
-        local_imageSection[(offsetY + row) * (blockDim.x) + (offsetX + col + j)] = 0.0;
-      else
-        local_imageSection[(offsetY + row) * (blockDim.x) + (offsetX + col + j)] = d_image[y * (*d_imageWidth) + j];
-    }
-  }
-  else if ((col > offsetX || col < blockDim.x - offsetX) && (row == 0 || row == blockDim.y - 1))
-  {
+// ....// case2: upper right
+// ....x = x0 + KERNEL_RADIUS;
+// ....y = y0 - KERNEL_RADIUS;
+// ....if ( x > dataW-1 || y < 0 )
+// ........data[threadIdx.x + blockDim.x][threadIdx.y] = 0;
+// ....else
+// ........data[threadIdx.x + blockDim.x][threadIdx.y] = d_Data[gLoc + KERNEL_RADIUS - IMUL(dataW, KERNEL_RADIUS)];
 
-    for (int i = y - offsetY; i <= y + offsetY; i++)
-    {
-      if (i < 0 || i >= *d_imageHeight)
-        local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col)] = 0.0;
-      else
-        local_imageSection[(offsetY + row + i) * (blockDim.x) + (offsetX + col)] = d_image[i * (*d_imageWidth) + x];
-    }
-  }
-  else if ((col > offsetX || col < blockDim.x - offsetX) && (row > offsetY || row < blockDim.y - offsetY))
-  {
+// ....// case3: lower left
+// ....x = x0 - KERNEL_RADIUS;
+// ....y = y0 + KERNEL_RADIUS;
+// ....if (x < 0 || y > dataH-1)
+// ........data[threadIdx.x][threadIdx.y + blockDim.y] = 0;
+// ....else
+// ........data[threadIdx.x][threadIdx.y + blockDim.y] = d_Data[gLoc - KERNEL_RADIUS + IMUL(dataW, KERNEL_RADIUS)];
 
-    local_imageSection[(offsetY + row) * (blockDim.x) + (offsetX + col)] = d_image[y * (*d_imageWidth) + x];
-  }
+// ....// case4: lower right
+// ....x = x0 + KERNEL_RADIUS;
+// ....y = y0 + KERNEL_RADIUS;
+// ....if ( x > dataW-1 || y > dataH-1)
+// ........data[threadIdx.x + blockDim.x][threadIdx.y + blockDim.y] = 0;
+// ....else
+// ........data[threadIdx.x + blockDim.x][threadIdx.y + blockDim.y] = d_Data[gLoc + KERNEL_RADIUS + IMUL(dataW, KERNEL_RADIUS)];
 
-  __syncthreads();
+// ....__syncthreads();
 
-  // if (blockIdx.x == 0 && blockidx.y ==0){
-  //   printf("")
-  // }
+// ....// convolution
+// ....float sum = 0;
+// ....x = KERNEL_RADIUS + threadIdx.x;
+// ....y = KERNEL_RADIUS + threadIdx.y;
+// ....for (int i = -KERNEL_RADIUS; i <= KERNEL_RADIUS; i++)
+// ........for (int j = -KERNEL_RADIUS; j <= KERNEL_RADIUS; j++)
+// ............sum += data[x + i][y + j] * d_Kernel[KERNEL_RADIUS + j] * d_Kernel[KERNEL_RADIUS + i];
 
-  if ((y < (*d_imageHeight)) && (x < (*d_imageWidth)))
-  {
-    float sum = 0.0;
-    for (int j = 0; j < *d_kernelDimensionY; j++)
-    {
-      //Ignore out of bounds
-      if (row + j - offsetY < 0)
-      {
-        continue;
-      }
-
-      for (int i = 0; i < *d_kernelDimensionX; i++)
-      {
-        //Ignore out of bounds
-        if (col + i - offsetX < 0)
-        {
-          continue;
-        }
-
-        float value;
-
-        float k = d_kernel[i + j * (*d_kernelDimensionY)];
-        float imageElement = local_imageSection[(row + j) * (blockDim.x) + col + i];
-
-        value = k * imageElement;
-        sum = sum + value;
-      }
-    }
-
-    //Normalising output ;
-    // if (sum < 0)
-    //   sum = 0;
-    // else if (sum > 1)
-    //   sum = 1;
-    __syncthreads();
-    // d_sumArray[y * (*d_imageWidth) + x - 2 * blockIdx.x] = sum;
-    d_sumArray[y * (*d_imageWidth) + x] = sum;
-  }
+// ....d_Result[gLoc] = sum;
 }
 
 #endif
