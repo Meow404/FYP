@@ -54,7 +54,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
 
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
-  printf("Kernels loaded\n");
+  //printf("Kernels loaded\n");
 
   results = (float *)malloc(numOfKernels * sizeof(float));
 
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 
   // kernelHandler kh = kernelHandler("../kernels.txt");
 
-  printf("Kernels loaded\n");
+  //printf("Kernels loaded\n");
 
   char image_files[5][35] = { "res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm" };
 
@@ -210,9 +210,9 @@ int main(int argc, char **argv)
       for (int i = 1; i < 8; i++)
       {
         results[i - 1] = imageConvolutionParallel(image_files[k], argv, i, false);
-        printf("Image %d : Type %d DONE", k, i);
+        printf("Image %d : Type %d DONE\n", k, i);
       }
-      printf("Image : %s", image_files[k]);
+      printf("Image : %s\n", image_files[k]);
       printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
       for (int i = 0; i < numOfKernels; i++)
       {
