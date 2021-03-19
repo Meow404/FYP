@@ -139,17 +139,19 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       float milliseconds = 0;
       cudaEventElapsedTime(&milliseconds, start, stop);
       if (print_save)
-        printf("Time Naive Parallel Implementation: %f \n", milliseconds);
+        printf("[%3d] Time : %f \n", j, milliseconds);
       totalTime += milliseconds;
 
-      if (totalTime>300000)
-        break;
+      if (totalTime>300000){
+        j++;
+        printf("Completed %d iteration.... exiting\n", j);
+        break;}
 
       if (j != ITERATIONS-1)
         free(result);
     }
     if (print_save)
-      printf("Time Serial Average Implementation: %f ms\n", totalTime / j);
+      printf("Time Average : %f ms\n", totalTime / j);
 
     results[i] = totalTime / j;
     if (print_save)
