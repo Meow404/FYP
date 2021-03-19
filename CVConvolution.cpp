@@ -102,7 +102,7 @@ int opencvCUDAConvolve(const char *file_path)
     kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
-        int offset = kh.getKernel(i).dimension/2;
+        int offset = (kh.getKernel(i).dimension-1)/2;
         copyMakeBorder(image, image, offset, offset, offset, offset, BORDER_CONSTANT, 0 );
         auto t_start = chrono::steady_clock::now();
         for (int j = 0; j < ITERATIONS; j++)
