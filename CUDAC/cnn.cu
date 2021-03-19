@@ -219,14 +219,14 @@ int main(int argc, char **argv)
 
   //printf("Kernels loaded\n");
 
-  char image_files[5][35] = {"res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm"};
+  char image_files[5][35] = {"res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm"};
 
   if (option < 11)
     imageConvolutionParallel(image_files[FILE_INDEX], argv, option);
   else if (option == 11)
   {
 
-    for (int k = 0; k < 5; k++)
+    for (int k = 0; k < 4; k++)
     {
 
       FILE *fp = fopen("kernels.txt", "r");
@@ -241,10 +241,10 @@ int main(int argc, char **argv)
       sscanf(buf, "%d", &numOfKernels);
       kernel **kernels = loadAllKernels(fp, numOfKernels);
 
-      float **results = (float **)malloc(sizeof(float *) * 7);
-      for (int i = 1; i < 8; i++)
+      float **results = (float **)malloc(sizeof(float *) * 2);
+      for (int i = 9; i < 11; i++)
       {
-        results[i - 1] = imageConvolutionParallel(image_files[k], argv, i, false);
+        results[i - 9] = imageConvolutionParallel(image_files[k], argv, i, false);
         printf("Image %d : Type %d DONE\n", k, i);
       }
       printf("Image : %s\n", image_files[k]);
@@ -252,9 +252,9 @@ int main(int argc, char **argv)
       for (int i = 0; i < numOfKernels; i++)
       {
         printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
-        for (int j = 1; j < 8; j++)
+        for (int j = 9; j < 11; j++)
         {
-          printf("%8.3f|", results[j - 1][i]);
+          printf("%8.3f|", results[j - 0][i]);
         }
         printf("\n");
       }
