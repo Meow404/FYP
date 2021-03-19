@@ -158,7 +158,7 @@ int main(int argc, char **argv)
         break;
 
     case 2:
-        opencvCUDAConvolve();
+        opencvCUDAConvolve("res/images/lena_bw.pgm");
         break;
 
         // case 3:
