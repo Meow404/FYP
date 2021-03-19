@@ -15,7 +15,7 @@ int opencvConvolve(char* file_path)
 {
     // Read the image file
     cv::Mat image = imread(file_path);
-    cv::Mat result;
+    cv::Mat result, temp;
     const int ratio = 3;
     const int lowThreshold = 20;
     const int kernel_size = 3;
@@ -34,7 +34,7 @@ int opencvConvolve(char* file_path)
     //      << " " << image << endl
     //      << endl;
 
-    cv::cvtColor(image, result, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(image, temp, cv::COLOR_BGR2GRAY);
     // kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
@@ -47,7 +47,7 @@ int opencvConvolve(char* file_path)
 
             // Ptr<cuda::Convolution> convolver = cuda::createConvolution(k.size);
             // convolver->convolve(result, k, result);
-            cv::filter2D(result, result, -1, k, Point(-1, -1), 5.0, BORDER_REPLICATE);
+            cv::filter2D(temp, result, -1, k, Point(-1, -1), 5.0, BORDER_REPLICATE);
         }
 
         char output_file[50], file_name[50];
