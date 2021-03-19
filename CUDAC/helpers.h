@@ -69,13 +69,7 @@ void freeKernels(kernel **kernels, int numOfKernels)
 {
     for (int k = 0; k < numOfKernels; k++)
     {
-        for (int i = 0; i < kernels[k]->dimension; i++)
-        {
-            for (int j = 0; j < kernels[k]->dimension; j++)
-            {
-                free(kernels[k]->matrix);
-            }
-        }
+        free(kernels[k]->matrix);
         free(kernels[k]);
     }
     free(kernels);
