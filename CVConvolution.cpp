@@ -53,7 +53,7 @@ int opencvConvolve(const char *file_path)
         }
         auto end = chrono::steady_clock::now();
         cout << "\nmElapsed time in milliseconds : "
-             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
+             << chrono::duration_cast<chrono::milliseconds>(end - start).count()/ITERATIONS
              << " ms" << endl;
 
         char output_file[50], file_name[50];
@@ -125,15 +125,15 @@ int opencvCUDAConvolve(const char *file_path)
             //      << endl;
         }
         auto end = chrono::steady_clock::now();
-        cout << "\nmElapsed time in milliseconds : "
-             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
-             << " ms" << endl;
+        cout << "\nAverage Elapsed time in milliseconds : "
+             << chrono::duration_cast<chrono::milliseconds>(end - start).count()/ITERATIONS
+             << " ms";
 
         char output_file[50], file_name[50];
         sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
         strcpy(output_file, file_path);
         strcpy(output_file + strlen(file_path) - 4, file_name);
-        cout << "\nWriting to : " << output_file;
+        cout << "\nWriting to : " << output_file << endl;
         imwrite(output_file, result);
     }
     //  image.copyTo(result);
