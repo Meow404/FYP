@@ -164,6 +164,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
     }
   }
   freeKernels(kernels, numOfKernels);
+  free(hData);
   return results;
 }
 
