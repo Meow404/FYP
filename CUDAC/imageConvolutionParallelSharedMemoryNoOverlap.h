@@ -101,7 +101,7 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   if ( x - offsetX < 0 || y + offsetY >= *d_imageHeight )
     local_imageSection[(row + *d_kernelDimensionY)*(blockDim.x) + col] = 0;
   else
-    local_imageSection[(row + *d_kernelDimensionY)*(blockDim.x) + col] = d_image[ (y + offsetY) * (*d_imageWidth) + (x - offsetX)]
+    local_imageSection[(row + *d_kernelDimensionY)*(blockDim.x) + col] = d_image[ (y + offsetY) * (*d_imageWidth) + (x - offsetX)];
 
   if ( x + offsetX >= *d_imageWidth  || y - offsetY < 0)
     local_imageSection[row*(blockDim.x) + (col + *d_kernelDimensionX)] = 0;
@@ -114,7 +114,7 @@ __syncthreads();
 float sum = 0;
 for (int i = 0; i <= *d_kernelDimensionX; i++)
   for (int j = 0; j <= *d_kernelDimensionY; j++)
-    sum += local_imageSection[(row + j)*(blockDim.x) + col + i] * d_Kernel[j*(*d_kernelDimensionX) + i];
+    sum += local_imageSection[(row + j)*(blockDim.x) + col + i] * d_kernel[j*(*d_kernelDimensionX) + i];
 
 d_sumArray[y*(*d_imageWidth) + x] = sum;
 }
