@@ -99,11 +99,12 @@ int opencvCUDAConvolve(const char *file_path)
     // gpu_image.upload(image);
     // gpu_image.convertTo(gpu_image, CV_32FC1);
 
-    kh.printKernel();
+    // kh.printKernel();
     for (int i = 0; i < kh.getNumOfKernels(); i++)
     {
         int offset = (kh.getKernel(i).dimension-1)/2;
         copyMakeBorder(image, temp, offset, offset, offset, offset, BORDER_CONSTANT,Scalar(0));
+        cv::cuda::resetDevice();
         auto t_start = chrono::steady_clock::now();
         for (int j = 0; j < ITERATIONS; j++)
         {
