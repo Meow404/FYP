@@ -199,6 +199,7 @@ __global__ void cudaMaxPool(double *gOutImage, double *gImage, int c, int h, int
   }
 
   gOutImage[indexToOffset(0, 0, channel, heightOffset, widthOffset)] = maxValue;
+  __syncthreads();
 }
 
 float cudaMaxPooling(int c, int h, int w, int fw, int fh)
