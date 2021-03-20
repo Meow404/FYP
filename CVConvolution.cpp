@@ -167,15 +167,18 @@ int main(int argc, char **argv)
     // printf("5 - Texture memory implementation \n ");
     int option;
     scanf("%d", &option);
+    char* files[4] = {"res/images/256_lena_bw.pgm","res/images/lena_bw.pgm","res/images/1024_lena_bw.pgm","res/images/2048_lena_bw.pgm"};
 
     switch (option)
     {
     case 1:
-        opencvConvolve("res/images/1024_lena_bw.pgm");
+        for (int k = 0; k < 4; k++)
+            opencvConvolve(files[k]);
         break;
 
     case 2:
-        opencvCUDAConvolve("res/images/1024_lena_bw.pgm");
+        for (int k = 0; k < 4; k++)
+        opencvCUDAConvolve(files[k]);
         break;
 
         // case 3:
