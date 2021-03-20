@@ -91,37 +91,47 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   // local_imageSection[row*(blockDim.x) + col] = d_image[y * (*d_imageWidth) + x];
 
-  if ( (x - offsetX) < 0 || (y - offsetY) < 0 )
-    local_imageSection[row*(memDimX) + col] = 0;
+  if ((x - offsetX) < 0 || (y - offsetY) < 0)
+    local_imageSection[row * (memDimX) + col] = 0;
   else
-    local_imageSection[row*(memDimX) + col] = d_image[ (y - offsetY) * (*d_imageWidth) + (x - offsetX)];
-  
+    local_imageSection[row * (memDimX) + col] = d_image[(y - offsetY) * (*d_imageWidth) + (x - offsetX)];
+
   if (row + blockDim.y < memDimY && col + blockDim.x < memDimX)
-    if ( x - offsetX + blockDim.x >= *d_imageWidth || y - offsetY + blockDim.y >= *d_imageHeight )
-      local_imageSection[(row + blockDim.y)*(memDimX) + (col + blockDim.x)] = 0;
+    if (x - offsetX + blockDim.x >= *d_imageWidth || y - offsetY + blockDim.y >= *d_imageHeight)
+      local_imageSection[(row + blockDim.y) * (memDimX) + (col + blockDim.x)] = 0;
     else
-      local_imageSection[(row + blockDim.y)*(memDimX) + (col + blockDim.x)] = d_image[ (y - offsetY + blockDim.y) * (*d_imageWidth) + (x - offsetX + blockDim.x)];
-  
-  if (row + blockDim.y < memDimY)  
-    if ( x - offsetX < 0 || y - offsetY + blockDim.y >= *d_imageHeight )
-      local_imageSection[(row + blockDim.y)*(memDimX) + col] = 0;
+      local_imageSection[(row + blockDim.y) * (memDimX) + (col + blockDim.x)] = d_image[(y - offsetY + blockDim.y) * (*d_imageWidth) + (x - offsetX + blockDim.x)];
+
+  if (row + blockDim.y < memDimY)
+    if (x - offsetX < 0 || y - offsetY + blockDim.y >= *d_imageHeight)
+      local_imageSection[(row + blockDim.y) * (memDimX) + col] = 0;
     else
-      local_imageSection[(row + blockDim.y)*(memDimX) + col] = d_image[ (y - offsetY + blockDim.y) * (*d_imageWidth) + (x - offsetX)];
-  
+      local_imageSection[(row + blockDim.y) * (memDimX) + col] = d_image[(y - offsetY + blockDim.y) * (*d_imageWidth) + (x - offsetX)];
+
   if (col + blockDim.x < memDimX)
-    if ( x - offsetX + blockDim.x >= *d_imageWidth  || y - offsetY < 0)
-      local_imageSection[row*(memDimX) + (col + blockDim.x)] = 0;
+    if (x - offsetX + blockDim.x >= *d_imageWidth || y - offsetY < 0)
+      local_imageSection[row * (memDimX) + (col + blockDim.x)] = 0;
     else
-      local_imageSection[row*(memDimX) + (col + blockDim.x)] = d_image[ (y - offsetY) * (*d_imageWidth) + (x - offsetX + blockDim.x)];
+      local_imageSection[row * (memDimX) + (col + blockDim.x)] = d_image[(y - offsetY) * (*d_imageWidth) + (x - offsetX + blockDim.x)];
 
-__syncthreads();
+  __syncthreads();
 
-// convolution
-float sum = 0;
-for (int i = 0; i <= *d_kernelDimensionX; i++)
-  for (int j = 0; j <= *d_kernelDimensionY; j++)
-    sum += local_imageSection[(row + j)*(memDimX) + col + i] * d_kernel[j*(*d_kernelDimensionX) + i];
+  // convolution
+  float sum = 0.0;
+  for (int j = 0; j < *d_kernelDimensionY; j++)
+  {
+    for (int i = 0; i < *d_kernelDimensionX; i++)
+    {
+      float value;
 
-  d_sumArray[y*(*d_imageWidth) + x] = sum;
+      float k = d_kernel[i + j * (*d_kernelDimensionY)];
+      float imageElement = local_imageSection[(row + j) * (memDimX) + col + i];
+
+      value = k * imageElement;
+      sum = sum + value;
+    }
+  }
+  __syncthreads();
+  d_sumArray[y * (*d_imageWidth) + x] = sum;
 }
 #endif
