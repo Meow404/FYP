@@ -514,7 +514,7 @@ int main(int ac, char *av[])
     {
       float total_time = 0.0;
       for (int k = 0; k < 100; k++)
-        total_time += cudaMaxPooling(1, imgSizes[i], imgSizes[i], FW, FH);
+        total_time += cudaMaxPooling(3, imgSizes[i], imgSizes[i], FW, FH);
       printf("Image size %4dx%4d | Kernel Size %2dx%2d | total time : %8.3f\n", imgSizes[i], imgSizes[i], kernelSizes[j], kernelSizes[j], total_time);
     }
   }
