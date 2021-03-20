@@ -10,8 +10,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
 float *applyKernelToImageParallelSharedConstantMemoryNoOverlap(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
   //printImage(image, imageWidth, imageHeight, "orginalImagePartition.txt");
-  int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
-  float *d_kernel, *d_image, *d_sumArray;
+  float *d_image, *d_sumArray;
 
   int sizeInt = sizeof(int);
   int sizeFloat = sizeof(float);
@@ -110,8 +109,8 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
 
   // convolution
   float sum = 0;
-  for (int i = 0; i <= *d_kernelDimensionX; i++)
-    for (int j = 0; j <= *d_kernelDimensionY; j++)
+  for (int i = 0; i <= kernelDimensionXConstant; i++)
+    for (int j = 0; j <= kernelDimensionYConstant; j++)
       sum += local_imageSection[(row + j) * (memDimX) + col + i] * kernelConstant[j * (kernelDimensionXConstant) + i];
 
   d_sumArray[y * (imageWidthConstant) + x] = local_imageSection[(row + offsetY) * (memDimX) + col + offsetX];
