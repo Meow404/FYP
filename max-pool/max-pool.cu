@@ -501,20 +501,20 @@ void cudnnMaxPooling(int c, int h, int w, int fw, int fh)
 
 int main(int ac, char *av[])
 {
-  int imgSizes[4] = { 256, 512, 1024, 2048 };
+  int imgSizes[2] = { 1024, 2048 };
   int kernelSizes[5] = { 3, 5, 7, 9, 11 };
   printf("Simple Max Pool Using CUDA\n");
   cudaMaxPoolingSimple(C, H, W, FW, FH);
   printf("\n");
 
   printf("Max Pool Using CUDA\n");
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 2; i++)
   {
     for (int j = 0; j < 5; j++)
     {
       float total_time = 0.0;
       for (int k = 0; k < 100; k++)
-        total_time += cudaMaxPooling(1, H, W, kernelSizes[j], kernelSizes[j]);
+        total_time += cudaMaxPooling(1, imgSizes[i], imgSizes[i], kernelSizes[j], kernelSizes[j]);
       printf("Image size %4dx%4d | Kernel Size %2dx%2d | total time : %8.3f\n", imgSizes[i], imgSizes[i], kernelSizes[j], kernelSizes[j], total_time);
     }
   }
