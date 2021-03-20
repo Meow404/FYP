@@ -499,8 +499,8 @@ void cudnnMaxPooling(int c, int h, int w, int fw, int fh)
 
 int main(int ac, char *av[])
 {
-  int imgSizes = [ 256, 512, 1024, 2048 ];
-  int kernelSizes = [ 3, 5, 7, 9, 11 ];
+  int imgSizes = { 256, 512, 1024, 2048 };
+  int kernelSizes = {} 3, 5, 7, 9, 11 };
   printf("Simple Max Pool Using CUDA\n");
   cudaMaxPoolingSimple(C, H, W, FW, FH);
   printf("\n");
