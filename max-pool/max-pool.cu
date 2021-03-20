@@ -253,13 +253,13 @@ float cudaMaxPooling(int c, int h, int w, int fw, int fh)
   dim3 blockDim(TW, TH);
   dim3 gridDim(DIV_RUP(w, TW), DIV_RUP(h, TH), c);
 
-  if(clock_gettime(CLOCK_MONOTONIC, &t_start))
-  { printf("CLOCK ERROR. Exiting.\n"); std::exit(EXIT_FAILURE); }
+  // if(clock_gettime(CLOCK_MONOTONIC, &t_start))
+  // { printf("CLOCK ERROR. Exiting.\n"); std::exit(EXIT_FAILURE); }
   cudaMaxPool<<<gridDim, blockDim, shmem_size>>>(gOutImage, gImage, c, h, w, fw, fh);
-  if(clock_gettime(CLOCK_MONOTONIC, &t_end))
-  { printf("CLOCK ERROR. Exiting.\n"); std::exit(EXIT_FAILURE); }
-  CUDA_CALL(cudaGetLastError());
-  printf("Time cuda code %lf sec\n", TimeSpecToSeconds(&t_end) - TimeSpecToSeconds(&t_start));
+  // if(clock_gettime(CLOCK_MONOTONIC, &t_end))
+  // { printf("CLOCK ERROR. Exiting.\n"); std::exit(EXIT_FAILURE); }
+  // CUDA_CALL(cudaGetLastError());
+  // printf("Time cuda code %lf sec\n", TimeSpecToSeconds(&t_end) - TimeSpecToSeconds(&t_start));
 
   // if(clock_gettime(CLOCK_MONOTONIC, &start))
   // { printf("CLOCK ERROR. Exiting.\n"); std::exit(EXIT_FAILURE); }
@@ -501,14 +501,14 @@ void cudnnMaxPooling(int c, int h, int w, int fw, int fh)
 
 int main(int ac, char *av[])
 {
-  int imgSizes[2] = { 1024, 2048 };
+  int imgSizes[3] = { 512, 1024, 2048 };
   int kernelSizes[5] = { 3, 5, 7, 9, 11 };
   printf("Simple Max Pool Using CUDA\n");
   cudaMaxPoolingSimple(C, H, W, FW, FH);
   printf("\n");
 
   printf("Max Pool Using CUDA\n");
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 3; i++)
   {
     for (int j = 0; j < 5; j++)
     {
