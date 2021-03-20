@@ -111,20 +111,9 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
   float sum = 0.0;
   for (int j = 0; j < kernelDimensionYConstant; j++)
   {
-    //Ignore out of bounds
-    if (row + j - offsetY < 0)
-    {
-      continue;
-    }
-
     for (int i = 0; i < kernelDimensionXConstant; i++)
     {
-      //Ignore out of bounds
-      if (
-          col + i - offsetX < 0)
-      {
-        continue;
-      }
+
       float value;
 
       float k = kernelConstant[i + j * (kernelDimensionYConstant)];
