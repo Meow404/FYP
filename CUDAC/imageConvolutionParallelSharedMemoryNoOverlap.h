@@ -91,30 +91,30 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   // local_imageSection[row*(blockDim.x) + col] = d_image[y * (*d_imageWidth) + x];
 
-//   if ( x - blockDim.x < 0 || y - blockDim.y < 0 )
-//     local_imageSection[row*(blockDim.x) + col] = 0;
-//   else
-//     local_imageSection[row*(blockDim.x) + col] = d_image[ (y - blockDim.y) * (*d_imageWidth) + (x - blockDim.x)];
+  if ( x - blockDim.x < 0 || y - blockDim.y < 0 )
+    local_imageSection[row*(blockDim.x) + col] = 0;
+  else
+    local_imageSection[row*(blockDim.x) + col] = d_image[ (y - blockDim.y) * (*d_imageWidth) + (x - blockDim.x)];
   
-//   if (row + blockDim.y < memDimY && col + blockDim.x < memDimX)
-//     if ( x + blockDim.x >= *d_imageWidth || y + blockDim.y >= *d_imageHeight )
-//       local_imageSection[(row + blockDim.y)*(blockDim.x) + (col + blockDim.x)] = 0;
-//     else
-//       local_imageSection[(row + blockDim.y)*(blockDim.x) + (col + blockDim.x)] = d_image[ (y + blockDim.y) * (*d_imageWidth) + (x + blockDim.x)];
+  if (row + blockDim.y < memDimY && col + blockDim.x < memDimX)
+    if ( x + blockDim.x >= *d_imageWidth || y + blockDim.y >= *d_imageHeight )
+      local_imageSection[(row + blockDim.y)*(blockDim.x) + (col + blockDim.x)] = 0;
+    else
+      local_imageSection[(row + blockDim.y)*(blockDim.x) + (col + blockDim.x)] = d_image[ (y + blockDim.y) * (*d_imageWidth) + (x + blockDim.x)];
   
-//   if (row + blockDim.y < memDimY)  
-//     if ( x - blockDim.x < 0 || y + blockDim.y >= *d_imageHeight )
-//       local_imageSection[(row + blockDim.y)*(blockDim.x) + col] = 0;
-//     else
-//       local_imageSection[(row + blockDim.y)*(blockDim.x) + col] = d_image[ (y + blockDim.y) * (*d_imageWidth) + (x - blockDim.x)];
+  if (row + blockDim.y < memDimY)  
+    if ( x - blockDim.x < 0 || y + blockDim.y >= *d_imageHeight )
+      local_imageSection[(row + blockDim.y)*(blockDim.x) + col] = 0;
+    else
+      local_imageSection[(row + blockDim.y)*(blockDim.x) + col] = d_image[ (y + blockDim.y) * (*d_imageWidth) + (x - blockDim.x)];
   
-//   if (col + blockDim.x < memDimX)x
-//     if ( x + blockDim.x >= *d_imageWidth  || y - blockDim.y < 0)
-//       local_imageSection[row*(blockDim.x) + (col + blockDim.x)] = 0;
-//     else
-//       local_imageSection[row*(blockDim.x) + (col + blockDim.x)] = d_image[ (y - blockDim.y) * (*d_imageWidth) + (x + blockDim.x)];
+  if (col + blockDim.x < memDimX)x
+    if ( x + blockDim.x >= *d_imageWidth  || y - blockDim.y < 0)
+      local_imageSection[row*(blockDim.x) + (col + blockDim.x)] = 0;
+    else
+      local_imageSection[row*(blockDim.x) + (col + blockDim.x)] = d_image[ (y - blockDim.y) * (*d_imageWidth) + (x + blockDim.x)];
 
-// __syncthreads();
+__syncthreads();
 
 // // convolution
 // float sum = 0;
