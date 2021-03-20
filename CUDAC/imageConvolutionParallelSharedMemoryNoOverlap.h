@@ -108,7 +108,7 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
     else
       local_imageSection[(row + blockDim.y)*(blockDim.x) + col] = d_image[ (y + blockDim.y) * (*d_imageWidth) + (x - blockDim.x)];
   
-  if (col + blockDim.x < memDimX)x
+  if (col + blockDim.x < memDimX)
     if ( x + blockDim.x >= *d_imageWidth  || y - blockDim.y < 0)
       local_imageSection[row*(blockDim.x) + (col + blockDim.x)] = 0;
     else
