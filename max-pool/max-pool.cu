@@ -247,7 +247,7 @@ float cudaMaxPooling(int c, int h, int w, int fw, int fh)
   // CUDA_CALL(cudaGetLastError());
   // printf("Time cuda code %lf sec\n", TimeSpecToSeconds(&end) - TimeSpecToSeconds(&start));
 
-  int shmem_size = sizeof(double) * (TW + FW - 1) * (TH + FH - 1);
+  int shmem_size = sizeof(double) * (TW + fw - 1) * (TH + fh - 1);
   dim3 blockDim(TW, TH);
   dim3 gridDim(DIV_RUP(w, TW), DIV_RUP(h, TH), c);
 
