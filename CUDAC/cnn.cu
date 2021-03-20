@@ -12,6 +12,7 @@
 #include "imageConvolutionTextureMemory.h"
 #include "imageConvolution2DTextureMemory.h"
 #include "imageConvolutionParallelSharedMemoryNoOverlap.h"
+#include "imageConvolutionParallelSharedConstantMemoryNoOverlap.h"
 
 const char *imageFilename = "res//images//1024_lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
@@ -131,21 +132,25 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
         if (j == 0)
           sprintf(file_name, "_%dx%d_paralled_2D_texture_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
-
       case 8:
-        result = applyKernelToImageParallelSharedMemoryNoOverlap(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
-        if (j == 0)
-          sprintf(file_name, "_%dx%d_parallel_shared_no_overlap_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
-        break;
-      case 9:
         result = applyKernelToImageParallelSharedMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH + kernels[i]->dimension - 1);
         if (j == 0)
           sprintf(file_name, "_%dx%d_parallel_shared_mod_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
-      case 10:
+      case 9:
         result = applyKernelToImageParallelSharedConstantMemory(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH + kernels[i]->dimension - 1);
         if (j == 0)
           sprintf(file_name, "_%dx%d_parallel_shared_constant_mod_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        break;
+      case 10:
+        result = applyKernelToImageParallelSharedMemoryNoOverlap(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        if (j == 0)
+          sprintf(file_name, "_%dx%d_parallel_shared_no_overlap_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+        break;
+      case 11:
+        result = applyKernelToImageParallelSharedConstantMemoryNoOverlap(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
+        if (j == 0)
+          sprintf(file_name, "_%dx%d_parallel_shared_no_overlap_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       default:
@@ -207,10 +212,11 @@ int main(int argc, char **argv)
   printf("5 - Shared Constant memory implementation \n");
   printf("6 - Texture memory implementation \n");
   printf("7 - 2D Texture memory implementation \n");
-  printf("8 - Shared memory No Overlap implementation \n");
-  printf("9 - Shared memory modified implementation \n");
-  printf("10 - Shared + constant memory modified implementation \n");
-  printf("11 - All \n ");
+  printf("8 - Shared memory modified implementation \n");
+  printf("9 - Shared + constant memory modified implementation \n");
+  printf("10 - Shared memory No Overlap implementation \n");
+  printf("11 - Shared memory No Overlap implementation \n");
+  printf("12 - All \n ");
   int option;
   char buf[512];
   scanf("%d", &option);
@@ -221,9 +227,9 @@ int main(int argc, char **argv)
 
   char image_files[5][35] = {"res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm"};
 
-  if (option < 11)
+  if (option < 12)
     imageConvolutionParallel(image_files[FILE_INDEX], argv, option);
-  else if (option == 11)
+  else if (option == 12)
   {
 
     for (int k = 0; k < 4; k++)
