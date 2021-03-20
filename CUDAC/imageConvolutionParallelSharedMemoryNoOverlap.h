@@ -122,6 +122,6 @@ for (int i = 0; i <= *d_kernelDimensionX; i++)
   for (int j = 0; j <= *d_kernelDimensionY; j++)
     sum += local_imageSection[(row + j)*(memDimX) + col + i] * d_kernel[j*(*d_kernelDimensionX) + i];
 
-  d_sumArray[y*(*d_imageWidth) + x] = local_imageSection[(row + offsetY)*(memDimX) + col + offsetX];
+  d_sumArray[y*(*d_imageWidth) + x] = sum;
 }
 #endif

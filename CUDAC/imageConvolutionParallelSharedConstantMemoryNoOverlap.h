@@ -113,6 +113,6 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
     for (int j = 0; j <= kernelDimensionYConstant; j++)
       sum += local_imageSection[(row + j) * (memDimX) + col + i] * kernelConstant[j * (kernelDimensionXConstant) + i];
 
-  d_sumArray[y * (imageWidthConstant) + x] = local_imageSection[(row + offsetY) * (memDimX) + col + offsetX];
+  d_sumArray[y * (imageWidthConstant) + x] = sum;
 }
 #endif
