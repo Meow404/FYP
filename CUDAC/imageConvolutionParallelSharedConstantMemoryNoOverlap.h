@@ -108,11 +108,40 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
   __syncthreads();
 
   // convolution
-  float sum = 0;
-  for (int i = 0; i <= kernelDimensionXConstant; i++)
-    for (int j = 0; j <= kernelDimensionYConstant; j++)
-      sum += local_imageSection[(row + j) * (memDimX) + col + i] * kernelConstant[j * (kernelDimensionXConstant) + i];
+  float sum = 0.0;
+  for (int j = 0; j < kernelDimensionYConstant; j++)
+  {
+    //Ignore out of bounds
+    if (row + j - offsetY < 0)
+    {
+      continue;
+    }
 
+    for (int i = 0; i < kernelDimensionXConstant; i++)
+    {
+      //Ignore out of bounds
+      if (
+          col + i - offsetX < 0)
+      {
+        continue;
+      }
+      float value;
+
+      float k = kernelConstant[i + j * (kernelDimensionYConstant)];
+      float imageElement = local_imageSection[(row + j) * (memDimX) + col + i];
+
+      value = k * imageElement;
+      sum = sum + value;
+    }
+  }
+
+  //Normalising output ;
+  // if (sum < 0)
+  //   sum = 0;
+  // else if (sum > 1)
+  //   sum = 1;
+  __syncthreads();
+  // d_sumArray[y * (*d_imageWidth) + x - 2 * blockIdx.x] = sum;
   d_sumArray[y * (imageWidthConstant) + x] = sum;
 }
 #endif
