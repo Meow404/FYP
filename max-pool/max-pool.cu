@@ -216,7 +216,7 @@ float cudaMaxPooling(int c, int h, int w, int fw, int fh)
   double *gOutImage;
 
   fillImage(cImage, c, h, w);
-  struct timespec start, end;
+  struct timespec t_start, t_end;
 
   cudaDeviceReset();
   cudaEvent_t start, stop;
