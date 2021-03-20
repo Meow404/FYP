@@ -94,7 +94,7 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   if ( (x - offsetX) < 0 || (y - offsetY) < 0 )
     local_imageSection[row*(blockDim.x) + col] = 0;
   else
-    local_imageSection[row*(blockDim.x) + col] = d_image[ (y - offsetY) * (*d_imageWidth) + (x - pffsetX)];
+    local_imageSection[row*(blockDim.x) + col] = d_image[ (y - offsetY) * (*d_imageWidth) + (x - offsetX)];
   
   // if (row + blockDim.y < memDimY && col + blockDim.x < memDimX)
   //   if ( x + blockDim.x >= *d_imageWidth || y + blockDim.y >= *d_imageHeight )
