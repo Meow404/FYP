@@ -150,7 +150,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       case 11:
         result = applyKernelToImageParallelSharedConstantMemoryNoOverlap(hData, width, height, *kernels[i], imagePath, BLOCK_WIDTH);
         if (j == 0)
-          sprintf(file_name, "_%dx%d_parallel_shared_no_overlap_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
+          sprintf(file_name, "_%dx%d_parallel_shared_constant_no_overlap_out.pgm", kernels[i]->dimension, kernels[i]->dimension);
         break;
 
       default:
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
   printf("8 - Shared memory modified implementation \n");
   printf("9 - Shared + constant memory modified implementation \n");
   printf("10 - Shared memory No Overlap implementation \n");
-  printf("11 - Shared memory No Overlap implementation \n");
+  printf("11 - Shared Constant memory No Overlap implementation \n");
   printf("12 - All \n ");
   int option;
   char buf[512];
