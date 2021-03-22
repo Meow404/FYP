@@ -18,7 +18,7 @@ const char *imageFilename = "res//images//1024_lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
 #define ITERATIONS 100
 #define BLOCK_WIDTH 16
-#define FILE_INDEX 2
+#define FILE_INDEX 3
 
 float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
 {
@@ -160,9 +160,9 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       cudaEventSynchronize(stop);
       float milliseconds = 0;
       cudaEventElapsedTime(&milliseconds, start, stop);
-      if (print_save)
-        printf("[%3d] Time : %f \n", j, milliseconds);
-      totalTime += milliseconds;
+      // if (print_save)
+      //   printf("[%3d] Time : %f \n", j, milliseconds);
+      // totalTime += milliseconds;
 
       if (totalTime > 300000)
       {
@@ -175,7 +175,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
         free(result);
     }
     if (print_save)
-      printf("Time Average : %f ms\n", totalTime / j);
+      printf("%d | %f \n", kernels[i]->dimension, totalTime / j);
 
     results[i] = totalTime / j;
     if (print_save)

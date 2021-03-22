@@ -143,9 +143,11 @@ int opencvCUDAConvolve(const char *file_path)
         }
         // auto t_end = chrono::steady_clock::now();
         auto t_end = chrono::steady_clock::now();
-        cout << "\nAverage Elapsed time in milliseconds : "
+        cout << kh.getKernel(i).dimension
+             << " | "
              << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS*1000.0)
-             << " micro s" << endl;
+            //  << " " 
+             << endl;
 
         // char output_file[50], file_name[50];
         // sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(i).dimension, kh.getKernel(i).dimension);
@@ -178,7 +180,7 @@ int main(int argc, char **argv)
         break;
 
     case 2:
-        for (int k = 0; k < 4; k++)
+        for (int k = 3; k < 4; k++)
         opencvCUDAConvolve(files[k]);
         break;
 
