@@ -148,12 +148,12 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
          //  << " "
          << endl;
 
-    // char output_file[50], file_name[50];
-    // sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(kernel_index).dimension, kh.getKernel(kernel_index).dimension);
-    // strcpy(output_file, file_path);
-    // strcpy(output_file + strlen(file_path) - 4, file_name);
-    // cout << "\nWriting to : " << output_file << endl;
-    // imwrite(output_file, result);
+    char output_file[50], file_name[50];
+    sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(kernel_index).dimension, kh.getKernel(kernel_index).dimension);
+    strcpy(output_file, file_path);
+    strcpy(output_file + strlen(file_path) - 4, file_name);
+    cout << "\nWriting to : " << output_file << endl;
+    imwrite(output_file, result);
 //  image.copyTo(result);
 }
 
