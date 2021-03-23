@@ -99,7 +99,7 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
 
     // kh.printKernel();
 
-    int offset = (kh.getKernel(i).dimension - 1) / 2;
+    int offset = (kh.getKernel(kernel_index).dimension - 1) / 2;
     copyMakeBorder(image, temp, offset, offset, offset, offset, BORDER_CONSTANT, Scalar(0));
     cv::cuda::resetDevice();
     auto t_start = chrono::steady_clock::now();
@@ -112,8 +112,8 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
         gpu_image.upload(temp);
         gpu_image.convertTo(gpu_image, CV_32FC1);
 
-        int dim = kh.getKernel(i).dimension;
-        cv::Mat k = kh.returnMatrix(i);
+        int dim = kh.getKernel(kernel_index).dimension;
+        cv::Mat k = kh.returnMatrix(kernel_index);
         // cout << "kernel = " << k << endl;
 
         // cv::normalize(k, k, 1.0, 0.0, NORM_L1);
