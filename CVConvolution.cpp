@@ -7,7 +7,7 @@
 #include "kernelHandler.h"
 #include <chrono>
 
-#define ITERATIONS 100
+#define ITERATIONS 1
 
 using namespace cv;
 using namespace std;
