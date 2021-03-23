@@ -94,8 +94,8 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   // int memDimY = blockDim.y + *d_kernelDimensionY - 1;
 
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
-  // int x = blockIdx.x * blockDim.x + threadIdx.x;
-  // int y = blockIdx.y * blockDim.y + threadIdx.y;
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
   // int row = threadIdx.y;
