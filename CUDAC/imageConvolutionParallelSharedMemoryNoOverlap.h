@@ -9,32 +9,49 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *kernelX, i
 
 float *applyKernelToImageParallelSharedMemoryNoOverlap(float *image, int imageWidth, int imageHeight, kernel kernel, char *imagePath, int blockWidth)
 {
-  //printImage(image, imageWidth, imageHeight, "orginalImagePartition.txt");
+  /*
+  This function makes use of GPU threading capability by assigign each thread a pixel to apply the convolutional kernel on
+
+  float *image : 1D float matrix containing image values
+  int imageWidth: Image width 
+  int imageHeight: Image Height
+  kernel* kernel: Kernel to be applied on image
+  char *imagePath: Path to image being convoluted
+  int blockWidth: Width and height of a single block 
+
+  return : Resultant image as a 1D float matrix
+  */
+
+  // Variables that will point to values on the device
   int *d_kernelDimensionX, *d_kernelDimensionY, *d_imageWidth, *d_imageHeight;
   float *d_kernel, *d_image, *d_sumArray;
 
   int sizeInt = sizeof(int);
   int sizeFloat = sizeof(float);
   int sizeImageArray = imageWidth * imageHeight * sizeFloat;
+
+  // Resultant convoluted image as a 1D float matrix
   float *sumArray = (float *)malloc(sizeImageArray);
 
+  // CUDA create variables
   cudaMalloc((void **)&d_kernelDimensionX, sizeInt);
   cudaMalloc((void **)&d_kernelDimensionY, sizeInt);
   cudaMalloc((void **)&d_imageWidth, sizeInt);
   cudaMalloc((void **)&d_imageHeight, sizeInt);
-  cudaMalloc((void **)&d_kernel, kernel.dimension * kernel.dimension * sizeFloat);
+  cudaMalloc((void **)&d_kernel, kernel->dimension * kernel->dimension * sizeFloat);
   cudaMalloc((void **)&d_image, sizeImageArray);
   cudaMalloc((void **)&d_sumArray, sizeImageArray);
 
-  cudaMemcpy(d_kernelDimensionX, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_kernelDimensionY, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
+  // CUDA copy from host to device
+  cudaMemcpy(d_kernelDimensionX, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernelDimensionY, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageWidth, &imageWidth, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageHeight, &imageHeight, sizeInt, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernel, kernel->matrix, kernel->dimension * kernel->dimension * sizeFloat, cudaMemcpyHostToDevice);
   cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
-  int numHorBlocks = (imageWidth) / blockWidth;
-  int numVerBlocks = (imageHeight) / blockWidth;
+  int numHorBlocks = imageWidth / blockWidth;
+  int numVerBlocks = imageHeight / blockWidth;
 
   if (imageWidth % blockWidth)
     numHorBlocks++;
@@ -43,6 +60,7 @@ float *applyKernelToImageParallelSharedMemoryNoOverlap(float *image, int imageWi
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
   dim3 dimBlock(blockWidth, blockWidth, 1);
+
   applyKernelPerPixelParallelSharedMemoryNoOverlap<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
 
   cudaError_t errSync = cudaGetLastError();
@@ -54,7 +72,7 @@ float *applyKernelToImageParallelSharedMemoryNoOverlap(float *image, int imageWi
 
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
-  // CUDA free varibles
+  // CUDA free variables
   cudaFree(d_kernelDimensionX);
   cudaFree(d_kernelDimensionY);
   cudaFree(d_imageWidth);
