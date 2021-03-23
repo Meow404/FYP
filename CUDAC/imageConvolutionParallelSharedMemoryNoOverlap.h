@@ -43,7 +43,7 @@ float *applyKernelToImageParallelSharedMemoryNoOverlap(float *image, int imageWi
 
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
   dim3 dimBlock(blockWidth, blockWidth, 1);
-  applyKernelPerPixelParallelSharedMemoryNoOverlap<<<dimGrid, dimBlock, (blockWidth + kernel.dimension - 1) * (blockWidth + kernel.dimension - 1) * sizeFloat>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
+  applyKernelPerPixelParallelSharedMemoryNoOverlap<<<dimGrid, dimBlock>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
 
   cudaError_t errSync = cudaGetLastError();
   cudaError_t errAsync = cudaDeviceSynchronize();
@@ -83,7 +83,7 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   int row = threadIdx.y;
   int col = threadIdx.x;
 
-  extern __shared__ float local_imageSection[];
+  // extern __shared__ float local_imageSection[];
   // int imageIndex = y * (*d_imageWidth) + x;
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   // local_imageSection[row*(blockDim.x) + col] = d_image[y * (*d_imageWidth) + x];
