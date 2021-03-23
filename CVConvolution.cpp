@@ -102,13 +102,14 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
     int offset = (kh.getKernel(kernel_index).dimension - 1) / 2;
     copyMakeBorder(image, temp, offset, offset, offset, offset, BORDER_CONSTANT, Scalar(0));
     cv::cuda::resetDevice();
-    auto t_start = chrono::steady_clock::now();
+    // auto t_start = chrono::steady_clock::now();
     for (int j = 0; j < ITERATIONS; j++)
     {
-        //cv::cuda::resetDevice();
+        cv::cuda::resetDevice();
+        auto start = chrono::steady_clock::now();
         cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
 
-        // auto start = chrono::steady_clock::now();
+        
         gpu_image.upload(temp);
         gpu_image.convertTo(gpu_image, CV_32FC1);
 
@@ -121,7 +122,6 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
 
         gpu_kernel.upload(k);
         gpu_kernel.convertTo(gpu_kernel, CV_32FC1);
-        gpu_kernel.download(k);
 
         cout << "kernel = " << k << endl;
 
@@ -135,19 +135,19 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
         // cout << "result = " << endl
         //      << " " << result << endl
         //      << endl;
-        // auto end = chrono::steady_clock::now();
-        // cout << "\nElapsed time [" << j << "] in milliseconds : "
-        //      << chrono::duration_cast<chrono::milliseconds>(end - start).count()
-        //      << " ms";
+        auto end = chrono::steady_clock::now();
+        cout << "\nElapsed time [" << j << "] in milliseconds : "
+             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
+             << " ms";
         // total_time += (int)chrono::duration_cast<chrono::milliseconds>(end - start).count();
     }
     // auto t_end = chrono::steady_clock::now();
-    auto t_end = chrono::steady_clock::now();
-    cout << kh.getKernel(kernel_index).dimension
-         << " | "
-         << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS * 1000.0)
-         //  << " "
-         << endl;
+    // auto t_end = chrono::steady_clock::now();
+    // cout << kh.getKernel(kernel_index).dimension
+    //      << " | "
+    //      << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS * 1000.0)
+    //      //  << " "
+    //      << endl;
 
     char output_file[50], file_name[50];
     sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(kernel_index).dimension, kh.getKernel(kernel_index).dimension);
