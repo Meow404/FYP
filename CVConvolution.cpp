@@ -7,7 +7,7 @@
 #include "kernelHandler.h"
 #include <chrono>
 
-#define ITERATIONS 10
+#define ITERATIONS 100
 
 using namespace cv;
 using namespace std;
@@ -101,12 +101,12 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
 
     int offset = (kh.getKernel(kernel_index).dimension - 1) / 2;
     copyMakeBorder(image, temp, offset, offset, offset, offset, BORDER_CONSTANT, Scalar(0));
-    // cv::cuda::resetDevice();
-    // auto t_start = chrono::steady_clock::now();
+    cv::cuda::resetDevice();
+    auto t_start = chrono::steady_clock::now();
     for (int j = 0; j < ITERATIONS; j++)
     {
         // cv::cuda::resetDevice();
-        auto start = chrono::steady_clock::now();
+        // auto start = chrono::steady_clock::now();
         cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
 
         
@@ -128,33 +128,33 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
         // cv::normalize(k, k, 1.0, 0.0, NORM_L1);
         // cout << "kernel = " << k;
 
-        Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(32,32)); // cv::Size(dim, dim)
+        Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(temp.rows, temp.cols)); // cv::Size(dim, dim)
         convolver->convolve(gpu_image, gpu_kernel, gpu_result);
         // cv::filter2D(result, result, -1, kernel, Point(-1, -1), 5.0, BORDER_REPLICATE);
         gpu_result.download(result);
         // cout << "result = " << endl
         //      << " " << result << endl
         //      << endl;
-        auto end = chrono::steady_clock::now();
-        cout << "\nElapsed time [" << j << "] in milliseconds : "
-             << chrono::duration_cast<chrono::milliseconds>(end - start).count()
-             << " ms";
+        // auto end = chrono::steady_clock::now();
+        // cout << "\nElapsed time [" << j << "] in milliseconds : "
+        //      << chrono::duration_cast<chrono::milliseconds>(end - start).count()
+        //      << " ms";
         // total_time += (int)chrono::duration_cast<chrono::milliseconds>(end - start).count();
     }
-    // auto t_end = chrono::steady_clock::now();
-    // auto t_end = chrono::steady_clock::now();
-    // cout << kh.getKernel(kernel_index).dimension
-    //      << " | "
-    //      << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS * 1000.0)
-    //      //  << " "
-    //      << endl;
+    auto t_end = chrono::steady_clock::now();
+    auto t_end = chrono::steady_clock::now();
+    cout << kh.getKernel(kernel_index).dimension
+         << " | "
+         << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS * 1000.0)
+         //  << " "
+         << endl;
 
-    char output_file[50], file_name[50];
-    sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(kernel_index).dimension, kh.getKernel(kernel_index).dimension);
-    strcpy(output_file, file_path);
-    strcpy(output_file + strlen(file_path) - 4, file_name);
-    cout << "\nWriting to : " << output_file << endl;
-    imwrite(output_file, result);
+    // char output_file[50], file_name[50];
+    // sprintf(file_name, "_%dx%d_opencv_CUDA_out.pgm", kh.getKernel(kernel_index).dimension, kh.getKernel(kernel_index).dimension);
+    // strcpy(output_file, file_path);
+    // strcpy(output_file + strlen(file_path) - 4, file_name);
+    // cout << "\nWriting to : " << output_file << endl;
+    // imwrite(output_file, result);
 //  image.copyTo(result);
 }
 
