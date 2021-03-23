@@ -118,20 +118,20 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
 
   // convolution
   float sum = 0.0;
-  for (int j = 0; j < *d_kernelDimensionY; j++)
-  {
-    for (int i = 0; i < *d_kernelDimensionX; i++)
-    {
-      float value;
+  // for (int j = 0; j < *d_kernelDimensionY; j++)
+  // {
+  //   for (int i = 0; i < *d_kernelDimensionX; i++)
+  //   {
+  //     float value;
 
-      float k = d_kernel[i + j * (*d_kernelDimensionY)];
-      float imageElement = local_imageSection[(row + j) * (memDimX) + col + i];
+  //     float k = d_kernel[i + j * (*d_kernelDimensionY)];
+  //     float imageElement = local_imageSection[(row + j) * (memDimX) + col + i];
 
-      value = k * imageElement;
-      sum = sum + value;
-    }
-  }
-  __syncthreads();
-  d_sumArray[y * (*d_imageWidth) + x] = sum;
+  //     value = k * imageElement;
+  //     sum = sum + value;
+  //   }
+  // }
+  // __syncthreads();
+  d_sumArray[y * (*d_imageWidth) + x] = local_imageSection[(row + j) * (memDimX) + col + i];
 }
 #endif
