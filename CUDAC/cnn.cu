@@ -225,14 +225,14 @@ int main(int argc, char **argv)
 
   //printf("Kernels loaded\n");
 
-  char image_files[5][35] = {"res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm"};
+  char image_files[5][35] = {"res//images//256_lena_bw.pgm", "res//images//lena_bw.pgm", "res//images//1024_lena_bw.pgm", "res//images//2048_lena_bw.pgm", "res//images//4096_lena_bw.pgm"};
 
   if (option < 12)
     imageConvolutionParallel(image_files[FILE_INDEX], argv, option);
   else if (option == 12)
   {
 
-    for (int k = 0; k < 4; k++)
+    for (int k = 4; k < 5; k++)
     {
 
       FILE *fp = fopen("kernels.txt", "r");
