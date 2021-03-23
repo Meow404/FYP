@@ -17,7 +17,7 @@
 const char *imageFilename = "res//images//1024_lena_bw.pgm";
 //const char *imageFilename = "galaxy.ascii.pgm";
 #define ITERATIONS 100
-#define BLOCK_WIDTH 32
+#define BLOCK_WIDTH 24
 #define FILE_INDEX 3
 
 float *imageConvolutionParallel(const char *imageFilename, char **argv, int option, bool print_save = true)
