@@ -247,25 +247,32 @@ int main(int argc, char **argv)
       sscanf(buf, "%d", &numOfKernels);
       kernel **kernels = loadAllKernels(fp, numOfKernels);
 
-      float **results = (float **)malloc(sizeof(float *) * 11);
+      float *results;
       for (int i = 1; i < 12; i++)
       {
         if (i != 8 && i != 9)
-          results[i - 1] = imageConvolutionParallel(image_files[k], argv, i, false);
+        {
+          results = imageConvolutionParallel(image_files[k], argv, i, false);
+          for (int j = 0; j < numOfKernels; i++)
+          {
+            printf("\n%8.3f", results[j]);
+          }
+          printf("\n");
+        }
         printf("Image %d : Type %d DONE\n", k, i);
       }
-      printf("Image : %s\n", image_files[k]);
-      printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
-      for (int i = 0; i < numOfKernels; i++)
-      {
-        printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
-        for (int j = 1; j < 12; j++)
-        {
-          if (i != 8 && i != 9)
-          printf("%8.3f|", results[j - 1][i]);
-        }
-        printf("\n");
-      }
+      // printf("Image : %s\n", image_files[k]);
+      // printf("| MxM | Serial |Parallel| Shared |Constant|   SC   |  Text  | 2DText |\n");
+      // for (int i = 0; i < numOfKernels; i++)
+      // {
+      //   printf("|%2dx%2d|", kernels[i]->dimension, kernels[i]->dimension);
+      //   for (int j = 1; j < 12; j++)
+      //   {
+      //     if (i != 8 && i != 9)
+      //     printf("%8.3f|", results[j - 1][i]);
+      //   }
+      //   printf("\n");
+      // }
       printf("=================================\n\n\n");
     }
   }
