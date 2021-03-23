@@ -253,7 +253,7 @@ int main(int argc, char **argv)
         if (i != 8 && i != 9)
         {
           results = imageConvolutionParallel(image_files[k], argv, i, false);
-          for (int j = 0; j < numOfKernels; i++)
+          for (int j = 0; j < numOfKernels; j++)
           {
             printf("\n%8.3f", results[j]);
           }
