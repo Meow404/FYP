@@ -91,10 +91,10 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   // local_imageSection[row][col] = d_image[y * (*d_imageWidth) + x - 2 * blockIdx.x];
   // local_imageSection[row*(blockDim.x) + col] = d_image[y * (*d_imageWidth) + x];
 
-  // if ((x - offsetX) < 0 || (y - offsetY) < 0)
-  //   local_imageSection[row * (memDimX) + col] = 0;
-  // else
-  //   local_imageSection[row * (memDimX) + col] = d_image[(y - offsetY) * (*d_imageWidth) + (x - offsetX)];
+  if ((x - offsetX) < 0 || (y - offsetY) < 0)
+    local_imageSection[row * (memDimX) + col] = 0;
+  else
+    local_imageSection[row * (memDimX) + col] = d_image[(y - offsetY) * (*d_imageWidth) + (x - offsetX)];
 
   // if (row + blockDim.y < memDimY && col + blockDim.x < memDimX)
   //   if (x - offsetX + blockDim.x >= *d_imageWidth || y - offsetY + blockDim.y >= *d_imageHeight)
@@ -132,6 +132,6 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   //   }
   // }
   // __syncthreads();
-  d_sumArray[y * (*d_imageWidth) + x] = local_imageSection[(row + j) * (memDimX) + col + i];
+  d_sumArray[y * (*d_imageWidth) + x] = local_imageSection[(row + offsetY) * (memDimX) + col + offsetX];
 }
 #endif
