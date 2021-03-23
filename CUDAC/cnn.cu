@@ -250,7 +250,7 @@ int main(int argc, char **argv)
       float *results;
       for (int i = 1; i < 12; i++)
       {
-        if (i != 8 && i != 9)
+        if (i > 9)
         {
           results = imageConvolutionParallel(image_files[k], argv, i, false);
           for (int j = 0; j < numOfKernels; j++)
