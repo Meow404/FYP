@@ -101,7 +101,7 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
 
     int offset = (kh.getKernel(kernel_index).dimension - 1) / 2;
     copyMakeBorder(image, temp, offset, offset, offset, offset, BORDER_CONSTANT, Scalar(0));
-    // cv::cuda::resetDevice();
+    cv::cuda::resetDevice();
     // auto t_start = chrono::steady_clock::now();
     for (int j = 0; j < ITERATIONS; j++)
     {
