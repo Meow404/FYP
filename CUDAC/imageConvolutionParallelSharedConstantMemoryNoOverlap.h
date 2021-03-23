@@ -108,6 +108,8 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
   __syncthreads();
 
   // convolution
+     if (y < (*d_imageHeight) && x < (*d_imageWidth))
+  {
   float sum = 0.0;
   for (int j = 0; j < kernelDimensionYConstant; j++)
   {
@@ -132,5 +134,6 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
   __syncthreads();
   // d_sumArray[y * (*d_imageWidth) + x - 2 * blockIdx.x] = sum;
   d_sumArray[y * (imageWidthConstant) + x] = sum;
+}
 }
 #endif
