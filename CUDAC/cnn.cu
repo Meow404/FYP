@@ -162,7 +162,7 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       cudaEventElapsedTime(&milliseconds, start, stop);
       // if (print_save)
       //   printf("[%3d] Time : %f \n", j, milliseconds);
-      // totalTime += milliseconds;
+      totalTime += milliseconds;
 
       if (totalTime > 300000)
       {
