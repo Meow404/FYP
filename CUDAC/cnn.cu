@@ -232,7 +232,7 @@ int main(int argc, char **argv)
   else if (option == 12)
   {
 
-    for (int k = 3; k < 4; k++)
+    for (int k = 0; k < 4; k++)
     {
 
       FILE *fp = fopen("kernels.txt", "r");
