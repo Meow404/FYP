@@ -69,19 +69,19 @@ float *applyKernelToImageParallelSharedMemoryNoOverlap(float *image, int imageWi
 __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDimensionX, int *d_kernelDimensionY, int *d_imageWidth, int *d_imageHeight, float *d_kernel, float *d_image, float *d_sumArray)
 {
   // int comp = 45;
-  int offsetX = (*d_kernelDimensionX - 1) / 2;
-  int offsetY = (*d_kernelDimensionY - 1) / 2;
+  // int offsetX = (*d_kernelDimensionX - 1) / 2;
+  // int offsetY = (*d_kernelDimensionY - 1) / 2;
 
-  int memDimX = blockDim.x + *d_kernelDimensionX - 1;
-  int memDimY = blockDim.y + *d_kernelDimensionY - 1;
+  // int memDimX = blockDim.x + *d_kernelDimensionX - 1;
+  // int memDimY = blockDim.y + *d_kernelDimensionY - 1;
 
-  int y = blockIdx.y * blockDim.y + threadIdx.y;
-  int x = blockIdx.x * blockDim.x + threadIdx.x;
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
-  int row = threadIdx.y;
-  int col = threadIdx.x;
+  // int row = threadIdx.y;
+  // int col = threadIdx.x;
 
   // extern __shared__ float local_imageSection[];
   // int imageIndex = y * (*d_imageWidth) + x;
