@@ -160,8 +160,8 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
       cudaEventSynchronize(stop);
       float milliseconds = 0;
       cudaEventElapsedTime(&milliseconds, start, stop);
-      // if (print_save)
-      //   printf("[%3d] Time : %f \n", j, milliseconds);
+      if (print_save)
+        printf("[%3d] Time : %f \n", j, milliseconds);
       totalTime += milliseconds;
 
       if (totalTime > 300000)
@@ -189,10 +189,10 @@ float *imageConvolutionParallel(const char *imageFilename, char **argv, int opti
         }
         printf("\n");
       }
-      // strcpy(outputFilename, imagePath);
-      // strcpy(outputFilename + strlen(imagePath) - 4, file_name);
-      // printf("Saving to %s", outputFilename);
-      // sdkSavePGM(outputFilename, result, width, height);
+      strcpy(outputFilename, imagePath);
+      strcpy(outputFilename + strlen(imagePath) - 4, file_name);
+      printf("Saving to %s", outputFilename);
+      sdkSavePGM(outputFilename, result, width, height);
       free(result);
     }
   }
