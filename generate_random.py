@@ -1,6 +1,6 @@
 import random
 
-start = 3
+start = int(input("Start : "));
 num_of_kernels = int(input("Enter num of kernels : "));
 
 kernel_file = open(r"kernels.txt","w")
