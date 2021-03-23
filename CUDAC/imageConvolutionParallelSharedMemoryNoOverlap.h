@@ -38,16 +38,16 @@ float *applyKernelToImageParallelSharedMemoryNoOverlap(float *image, int imageWi
   cudaMalloc((void **)&d_kernelDimensionY, sizeInt);
   cudaMalloc((void **)&d_imageWidth, sizeInt);
   cudaMalloc((void **)&d_imageHeight, sizeInt);
-  cudaMalloc((void **)&d_kernel, kernel->dimension * kernel->dimension * sizeFloat);
+  cudaMalloc((void **)&d_kernel, kernel.dimension * kernel.dimension * sizeFloat);
   cudaMalloc((void **)&d_image, sizeImageArray);
   cudaMalloc((void **)&d_sumArray, sizeImageArray);
 
   // CUDA copy from host to device
-  cudaMemcpy(d_kernelDimensionX, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_kernelDimensionY, &kernel->dimension, sizeInt, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernelDimensionX, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernelDimensionY, &kernel.dimension, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageWidth, &imageWidth, sizeInt, cudaMemcpyHostToDevice);
   cudaMemcpy(d_imageHeight, &imageHeight, sizeInt, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_kernel, kernel->matrix, kernel->dimension * kernel->dimension * sizeFloat, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_kernel, kernel.matrix, kernel.dimension * kernel.dimension * sizeFloat, cudaMemcpyHostToDevice);
   cudaMemcpy(d_image, image, sizeImageArray, cudaMemcpyHostToDevice);
 
   int numHorBlocks = imageWidth / blockWidth;
