@@ -147,6 +147,9 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   //   }
   // }
   // __syncthreads();
-  // d_sumArray[y * (*d_imageWidth) + x] = 100;
+  if (y < (*d_imageHeight) && x < (*d_imageWidth))
+  {
+  d_sumArray[y * (*d_imageWidth) + x] = 100;
+  }
 }
 #endif
