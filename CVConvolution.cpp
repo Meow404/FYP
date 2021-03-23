@@ -128,7 +128,7 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
         // cv::normalize(k, k, 1.0, 0.0, NORM_L1);
         // cout << "kernel = " << k;
 
-        Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(dim, dim));
+        Ptr<cuda::Convolution> convolver = cuda::createConvolution(cv::Size(temp.rows, temp.cols)); // cv::Size(dim, dim)
         convolver->convolve(gpu_image, gpu_kernel, gpu_result);
         // cv::filter2D(result, result, -1, kernel, Point(-1, -1), 5.0, BORDER_REPLICATE);
         gpu_result.download(result);
