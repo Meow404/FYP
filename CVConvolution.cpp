@@ -140,7 +140,7 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
     }
     // auto t_end = chrono::steady_clock::now();
     auto t_end = chrono::steady_clock::now();
-    cout << kh.getKernel(i).dimension
+    cout << kh.getKernel(kernel_index).dimension
          << " | "
          << chrono::duration_cast<chrono::microseconds>(t_end - t_start).count() / (ITERATIONS * 1000.0)
          //  << " "
