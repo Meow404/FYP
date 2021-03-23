@@ -58,7 +58,7 @@ float *applyKernelToImageParallelNaive(float *image, int imageWidth, int imageHe
   dim3 dimGrid(numVerBlocks, numHorBlocks, 1);
   dim3 dimBlock(blockWidth, blockWidth, 1);
 
-  applyKernelPerPixelParallel<<<dimGrid, dimBlock, kernel.dimension * kernel.dimension * sizeFloat>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
+  applyKernelPerPixelParallel<<<dimGrid, dimBlock, (blockWidth + kernel.dimension - 1) * (blockWidth + kernel.dimension - 1) * sizeFloat>>>(d_kernelDimensionX, d_kernelDimensionY, d_imageWidth, d_imageHeight, d_kernel, d_image, d_sumArray);
   cudaMemcpy(sumArray, d_sumArray, sizeImageArray, cudaMemcpyDeviceToHost);
 
   // CUDA free variables
@@ -80,6 +80,8 @@ __global__ void applyKernelPerPixelParallel(int *d_kernelDimensionX, int *d_kern
 
   int offsetX = (*d_kernelDimensionX - 1) / 2;
   int offsetY = (*d_kernelDimensionY - 1) / 2;
+
+  extern __shared__ float [];
 
   float sum = 0.0;
 
