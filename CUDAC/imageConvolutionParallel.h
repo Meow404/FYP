@@ -81,7 +81,7 @@ __global__ void applyKernelPerPixelParallel(int *d_kernelDimensionX, int *d_kern
   int offsetX = (*d_kernelDimensionX - 1) / 2;
   int offsetY = (*d_kernelDimensionY - 1) / 2;
 
-  extern __shared__ float [];
+  extern __shared__ float mem[];
 
   float sum = 0.0;
 
