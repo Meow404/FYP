@@ -108,7 +108,7 @@ __global__ void applyKernelPerPixelParallelSharedConstantMemoryNoOverlap(float *
   __syncthreads();
 
   // convolution
-     if (y < (*d_imageHeight) && x < (*d_imageWidth))
+     if (y < (imageHeightConstant) && x < (imageWidthConstant))
   {
   float sum = 0.0;
   for (int j = 0; j < kernelDimensionYConstant; j++)
