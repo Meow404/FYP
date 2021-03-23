@@ -117,6 +117,7 @@ __global__ void applyKernelPerPixelParallelTextureMomory(int *d_kernelDimensionX
                 //  float imageElement = tex2D(texRef,tu, tv);
                 float value = k * imageElement;
                 sum = sum + value;
+                __syncthreads();
             }
         }
         // int imageIndex = y * (*d_imageWidth) + x;
