@@ -94,8 +94,8 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   // int memDimY = blockDim.y + *d_kernelDimensionY - 1;
 
   // int y = blockIdx.y * blockDim.y + threadIdx.y;
-  int x = blockIdx.x * blockDim.x + threadIdx.x;
-  int y = blockIdx.y * blockDim.y + threadIdx.y;
+  // int x = blockIdx.x * blockDim.x + threadIdx.x;
+  // int y = blockIdx.y * blockDim.y + threadIdx.y;
   // int x = blockIdx.x * blockDim.x + threadIdx.x;
 
   // int row = threadIdx.y;
@@ -132,7 +132,7 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   // __syncthreads();
 
   // convolution
-  float sum = 0.0;
+  // float sum = 0.0;
   // for (int j = 0; j < *d_kernelDimensionY; j++)
   // {
   //   for (int i = 0; i < *d_kernelDimensionX; i++)
@@ -147,6 +147,6 @@ __global__ void applyKernelPerPixelParallelSharedMemoryNoOverlap(int *d_kernelDi
   //   }
   // }
   // __syncthreads();
-  d_sumArray[y * (*d_imageWidth) + x] = 100;
+  // d_sumArray[y * (*d_imageWidth) + x] = 100;
 }
 #endif
