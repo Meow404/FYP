@@ -105,7 +105,7 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
     // auto t_start = chrono::steady_clock::now();
     for (int j = 0; j < ITERATIONS; j++)
     {
-        // cv::cuda::resetDevice();
+        cv::cuda::resetDevice();
         auto start = chrono::steady_clock::now();
         cv::cuda::GpuMat gpu_image, gpu_result, gpu_kernel;
 
