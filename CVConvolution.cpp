@@ -117,7 +117,7 @@ int opencvCUDAConvolve(const char *file_path, kernelHandler kh, int kernel_index
         // cout << "kernel = " << k << endl;
 
         // cv::normalize(k, k, 1.0, 0.0, NORM_L1);
-        // cout << "kernel = " << k << endl;
+        cout << "kernel = " << k << endl;
 
         gpu_kernel.upload(k);
         gpu_kernel.convertTo(gpu_kernel, CV_32FC1);
